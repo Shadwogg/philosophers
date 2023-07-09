@@ -1,0 +1,61 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Makefile                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2023/07/05 15:57:04 by ggiboury          #+#    #+#              #
+#    Updated: 2023/07/07 17:03:57 by ggiboury         ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
+SHELL = /bin/sh
+
+FLAGS = -Wall -Werror -Wextra
+
+NAME = philo
+
+SRCS = ft_atoi.c	\
+		ft_utils.c	\
+		ft_free.c
+
+S_MAIN = philosophers.c
+
+OBJS_COMMON = $(SRCS:.c=.o)
+
+OBJ_MAIN = $(S_MAIN:.c=.o)
+
+
+NC=\033[0m
+GREEN=\033[0;32m
+RED=\033[0;31m
+
+BOLD=\033[1m
+
+
+all : $(NAME)
+
+$(OBJS_COMMON) : $(SRCS)
+	@gcc $(FLAGS) $? -c
+
+$(OBJ_MAIN) : $(S_MAIN)
+	@gcc $(FLAGS) $? -c
+
+$(NAME) : $(OBJS_COMMON) $(OBJ_MAIN)
+	@gcc $(FLAGS) $(OBJS_COMMON) $(OBJ_MAIN) -o $(NAME)
+	@echo "$(GREEN)philo ready to be executed.$(NC)"
+
+re : fclean $(NAME)
+
+clean :
+	@/bin/rm -rf $(OBJS_COMMON)
+	@/bin/rm -rf $(OBJ_MAIN)
+	@echo ".o files removed."
+
+fclean : clean
+	@/bin/rm -f $(NAME)
+	@echo "$(GREEN)All compiled files removed.$(NC)"
+
+debug :	$(OBJS_COMMON) $(OBJ_MAIN)
+	@gcc $(FLAGS) -g $(OBJS_COMMON) $(OBJ_MAIN) -o $(NAME)
