@@ -6,7 +6,7 @@
 #    By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/07/05 15:57:04 by ggiboury          #+#    #+#              #
-#    Updated: 2023/07/07 17:03:57 by ggiboury         ###   ########.fr        #
+#    Updated: 2023/07/10 13:17:31 by ggiboury         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,7 +18,9 @@ NAME = philo
 
 SRCS = ft_atoi.c	\
 		ft_utils.c	\
-		ft_free.c
+		ft_free.c	\
+		ft_parse.c	\
+		ft_print.c	\
 
 S_MAIN = philosophers.c
 
@@ -58,4 +60,4 @@ fclean : clean
 	@echo "$(GREEN)All compiled files removed.$(NC)"
 
 debug :	$(OBJS_COMMON) $(OBJ_MAIN)
-	@gcc $(FLAGS) -g $(OBJS_COMMON) $(OBJ_MAIN) -o $(NAME)
+	@gcc $(FLAGS) $(OBJS_COMMON) $(OBJ_MAIN) -o $(NAME)

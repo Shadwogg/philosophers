@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/06 14:39:59 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/06 18:08:29 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/10 13:12:11 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,4 +42,28 @@ int	is_not_int(char *nb)
 	if (tmp > UINT_MAX)
 		return (1);
 	return (0);
+}
+
+void	add_list(t_thread **t, t_philo *ref)
+{
+	t_thread		*cur;
+	unsigned int	ct;
+
+	cur = *t;
+	ct = 1;
+	while (cur->next != NULL)
+	{
+		ct++;
+		cur = cur->next;
+	}
+	cur->next = malloc(sizeof(t_thread));
+	if (cur->next == NULL)
+	{
+		free(ref);
+		free_threads(*t);
+		print_error("t_thread failed to be malloc.");
+	}
+	cur->next->next = NULL;
+	cur->next->numero = ct;
+	cur->next->thread = NULL;
 }

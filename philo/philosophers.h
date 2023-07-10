@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 15:57:13 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/09 17:23:54 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/10 15:40:29 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ typedef struct s_philo
 	unsigned int	times;
 }	t_philo;
 
+// Chained list of thread
 typedef struct s_thread
 {
 	unsigned int	numero;
@@ -40,21 +41,33 @@ typedef struct s_thread
 typedef struct s_table
 {
 	unsigned int	philo;
-	char			*left_fork;
-	char			*right_fork;
+	pthread_mutex_t	*left_fork;
+	pthread_mutex_t	*right_fork;
 	t_philo			*menu;
 }	t_table;
 
-int		print_error(char *str);
+int				print_error(char *str);
+void			print_philo(t_philo *p);
+
+/*************************************PARSE************************************/
+
+void			add_list(t_thread **t, t_philo *ref);
+int				input_is_invalid(int argc, char **argv);
+t_philo			*ft_parse(int argc, char **argv);
+pthread_mutex_t	**init_forks(unsigned int nb, t_philo *p, t_thread *t);
+t_thread		*init_threads(t_philo *philo);
 
 /*************************************UTILS************************************/
 
-int		is_not_number(char *nb);
-int		is_not_int(char *nb);
-int		ft_atoi(const char *nptr);
+int				is_not_number(char *nb);
+int				is_not_int(char *nb);
+int				ft_atoi(const char *nptr);
 
-void	free_threads(t_thread *t);
-void	free_forks(char	**f, unsigned int nb);
-void	free_table(t_table *table);
+void			free_threads(t_thread *t);
+void			free_forks(pthread_mutex_t **f, unsigned int nb);
+void			free_table(t_table *table);
+void			fail_forks(char *str, t_philo *p, t_thread *t);
+void			free_print(char *str, t_philo *p, t_thread *t,
+					pthread_mutex_t **f);
 
 #endif
