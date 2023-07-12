@@ -38,12 +38,19 @@ typedef struct s_thread
 	pthread_t		thread;
 }	t_thread;
 
+typedef struct s_timer
+{
+	useconds_t		time_alive;
+	unsigned int	time_eaten;
+}	t_timer;
+
 typedef struct s_table
 {
 	unsigned int	philo;
 	pthread_mutex_t	*left_fork;
 	pthread_mutex_t	*right_fork;
 	t_philo			*menu;
+	t_timer			*timer;
 }	t_table;
 
 int				print_error(char *str);

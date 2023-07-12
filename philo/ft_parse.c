@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/10 12:59:43 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/10 15:11:08 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/12 18:07:12 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,6 @@ t_thread	*init_threads(t_philo *philo)
 	}
 	threads->next = NULL;
 	threads->numero = 1;
-	threads->thread = NULL;
 	ct = 1;
 	while (ct++ < philo->nb_philos)
 		add_list(&threads, philo);

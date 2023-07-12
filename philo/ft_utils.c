@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/06 14:39:59 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/10 13:12:11 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/12 18:06:38 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,5 +65,4 @@ void	add_list(t_thread **t, t_philo *ref)
 	}
 	cur->next->next = NULL;
 	cur->next->numero = ct;
-	cur->next->thread = NULL;
 }

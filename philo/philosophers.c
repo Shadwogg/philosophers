@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 15:57:10 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/10 15:44:42 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/12 19:41:29 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,30 @@ t_table	*set_table(t_philo *ref, pthread_mutex_t **forks, unsigned int ct)
 	return (table);
 }
 
+int	lock_forks(pthread_mutex_t *left, pthread_mutex_t *right)
+{
+	if (pthread_mutex_lock(left) != 0)
+		return (1);
+	if (pthread_mutex_lock(right) != 0)
+		return (1);
+	return (0);
+}
+
+int	unlock_forks(pthread_mutex_t *left, pthread_mutex_t *right)
+{
+	if (pthread_mutex_unlock(left) != 0)
+		return (1);
+	if (pthread_mutex_unlock(right) != 0)
+		return (1);
+	return (0);
+}
+
+int	philo_is_finished(t_table *table)
+{
+	(void) table;
+	return (1);
+}
+
 void	*live(void *table)
 {
 	t_table	*t;
@@ -56,8 +80,13 @@ void	*live(void *table)
 	t = table;
 	if (table == NULL)
 		return (NULL);
-	pthread_mutex_lock(t->left_fork);
-	pthread_mutex_lock(t->right_fork);
+	while (!philo_is_finished(table))
+	{
+		if (lock_forks(t->left_fork, t->right_fork) != 0)
+			return (table);
+		if (unlock_forks(t->left_fork, t->right_fork) != 0)
+			return (table);
+	}	
 	sleep(2);
 	printf("Coucou\n");
 	pthread_mutex_unlock(t->left_fork);
@@ -65,34 +94,55 @@ void	*live(void *table)
 	free_table(t);
 	return (NULL);
 }
+// Verify that each thread ended correctly, if not return 0.
+int	verify_threads(t_thread *threads)
+{
+	t_thread		*cur;
+	void			*returned_table;
+	char			err;
 
-void	philosopher(t_philo *p, t_thread *t, pthread_mutex_t **forks)
+	cur = threads;
+	err = 1;
+	returned_table = NULL;
+	while (cur != NULL)
+	{
+		printf("Fin\n");
+		if (pthread_join(cur->thread, returned_table) != 0)
+			printf("TO IMPLEMENT");
+		if (returned_table != NULL)
+		{
+			free_table(returned_table);
+			err = 0;
+		}
+		cur = cur->next;
+	}
+	return ((int) err);
+}
+
+//SI un philo meurt, peut on voir d'autre messages apres ?
+//Initialize each thread used for each philosopher.
+void	philosopher(t_philo *p, t_thread *threads, pthread_mutex_t **forks)
 {
 	t_thread		*cur;
 	t_table			*table;
 	unsigned int	ct;
 
-	cur = t;
+	cur = threads;
 	ct = 0;
 	while (cur != NULL)
 	{
 		table = set_table(p, forks, ct++);
 		if (table == NULL)
-			free_print("Table failed to be initialized.", p, t, forks);
+			free_print("Table failed to be initialized.", p, threads, forks);
 		if (pthread_create(&cur->thread, NULL, &live, table) == -1)
 		{
 			free_table(table);
-			free_print("Thread failed to be initialized.", p, t, forks);
+			free_print("Thread failed to be initialized.", p, threads, forks);
 		}
 		cur = cur->next;
 	}
-	cur = t;
-	while (cur != NULL)
-	{
-		printf("FIn\n");
-		pthread_join(cur->thread, NULL);
-		cur = cur->next;
-	}
+	if (verify_threads(threads) == 0)
+		free_print("One thread failed.", p, threads, forks);
 	printf("True ending\n");
 }
 
