@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 15:57:10 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/12 19:41:29 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/13 16:19:35 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,16 +45,21 @@ t_table	*set_table(t_philo *ref, pthread_mutex_t **forks, unsigned int ct)
 	else
 		table->left_fork = forks[ct - 1];
 	table->right_fork = forks[ct];
-	table->philo = ref->nb_philos;
+	table->philo_id = ct + 1;
 	return (table);
 }
 
-int	lock_forks(pthread_mutex_t *left, pthread_mutex_t *right)
+int	lock_forks(t_table *table, pthread_mutex_t *left, pthread_mutex_t *right)
 {
+	(void) table;
 	if (pthread_mutex_lock(left) != 0)
+		return (1);
+	if (print_status(table->philo_id, table->timer, "has taken a fork", table->turn) != 0)
 		return (1);
 	if (pthread_mutex_lock(right) != 0)
 		return (1);
+	// if (print_status(table->philo_id, table->timer, "has taken a fork", table->turn) != 0)
+	// 	return (1);
 	return (0);
 }
 
@@ -69,8 +74,10 @@ int	unlock_forks(pthread_mutex_t *left, pthread_mutex_t *right)
 
 int	philo_is_finished(t_table *table)
 {
-	(void) table;
-	return (1);
+	if (table->menu->times == (unsigned int) -1)
+		return (0);
+	//table->menu->times comparer avec le tableau des nombre de fois mange
+	return (0);
 }
 
 void	*live(void *table)
@@ -82,18 +89,17 @@ void	*live(void *table)
 		return (NULL);
 	while (!philo_is_finished(table))
 	{
-		if (lock_forks(t->left_fork, t->right_fork) != 0)
-			return (table);
+		printf("Nouveau tour pour %u\n", t->philo_id);
+		if (lock_forks(t, t->left_fork, t->right_fork) != 0)
+			return (t);
 		if (unlock_forks(t->left_fork, t->right_fork) != 0)
-			return (table);
-	}	
-	sleep(2);
-	printf("Coucou\n");
-	pthread_mutex_unlock(t->left_fork);
-	pthread_mutex_unlock(t->right_fork);
+			return (t);
+		break ;
+	}
 	free_table(t);
 	return (NULL);
 }
+
 // Verify that each thread ended correctly, if not return 0.
 int	verify_threads(t_thread *threads)
 {
@@ -106,7 +112,7 @@ int	verify_threads(t_thread *threads)
 	returned_table = NULL;
 	while (cur != NULL)
 	{
-		printf("Fin\n");
+		// printf("Fin\n");
 		if (pthread_join(cur->thread, returned_table) != 0)
 			printf("TO IMPLEMENT");
 		if (returned_table != NULL)
@@ -126,12 +132,14 @@ void	philosopher(t_philo *p, t_thread *threads, pthread_mutex_t **forks)
 	t_thread		*cur;
 	t_table			*table;
 	unsigned int	ct;
+	pthread_mutex_t	*turn;
 
 	cur = threads;
 	ct = 0;
+	turn = 
 	while (cur != NULL)
 	{
-		table = set_table(p, forks, ct++);
+		table = set_table(p, forks, ct++, turn);
 		if (table == NULL)
 			free_print("Table failed to be initialized.", p, threads, forks);
 		if (pthread_create(&cur->thread, NULL, &live, table) == -1)
@@ -160,7 +168,7 @@ int	main(int argc, char **argv)
 		free(philo);
 		return (1);
 	}
-	print_philo(philo);
+	// print_philo(philo);
 	threads = init_threads(philo);
 	forks = init_forks(philo->nb_philos, philo, threads);
 	philosopher(philo, threads, forks);

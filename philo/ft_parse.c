@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/10 12:59:43 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/12 18:07:12 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/13 16:11:22 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,6 @@ pthread_mutex_t	**init_forks(unsigned int nb, t_philo *p, t_thread *t)
 	if (forks == NULL)
 		fail_forks("Fork failed to be initialized in init_forks.", p, t);
 	ct = 0;
-	printf("nb = %u\n", nb);
 	while (ct < nb)
 	{
 		forks[ct] = malloc(sizeof(pthread_mutex_t));

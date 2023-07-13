@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 15:57:13 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/10 15:40:29 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/13 15:58:50 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,23 +38,29 @@ typedef struct s_thread
 	pthread_t		thread;
 }	t_thread;
 
+
+// struct timeval | ->tv_usec
 typedef struct s_timer
 {
 	useconds_t		time_alive;
 	unsigned int	time_eaten;
+	// pthread_mutex_t	*mutex;
 }	t_timer;
 
 typedef struct s_table
 {
-	unsigned int	philo;
+	unsigned int	philo_id;
 	pthread_mutex_t	*left_fork;
 	pthread_mutex_t	*right_fork;
+	pthread_mutex_t	*turn;
 	t_philo			*menu;
 	t_timer			*timer;
 }	t_table;
 
 int				print_error(char *str);
 void			print_philo(t_philo *p);
+int				print_status(unsigned int philo_id, t_timer *timer,
+					char *str, pthread_mutex_t	*turn);
 
 /*************************************PARSE************************************/
 
@@ -69,6 +75,7 @@ t_thread		*init_threads(t_philo *philo);
 int				is_not_number(char *nb);
 int				is_not_int(char *nb);
 int				ft_atoi(const char *nptr);
+char			*ft_itoa(unsigned int n);
 
 void			free_threads(t_thread *t);
 void			free_forks(pthread_mutex_t **f, unsigned int nb);
