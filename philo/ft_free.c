@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/07 17:03:35 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/10 15:37:16 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/15 00:38:12 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ void	free_forks(pthread_mutex_t **f, unsigned int nb)
 void	free_table(t_table *table)
 {
 	free(table->menu);
+	pthread_mutex_destroy(table->turn);
 	free(table);
 }
 

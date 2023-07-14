@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/10 12:59:43 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/13 16:11:22 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/15 01:00:09 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,9 +87,10 @@ t_philo	*ft_parse(int argc, char **argv)
 	philo->ttd = arr[1];
 	philo->tte = arr[2];
 	philo->tts = arr[3];
+	philo->times = UINT_MAX;
+	if (philo->times != 0)
+		printf("PC possede\n");
 	if (argc == 4)
 		philo->times = arr[4];
-	else
-		philo->times = 0;
 	return (philo);
 }

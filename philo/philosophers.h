@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 15:57:13 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/13 15:58:50 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/15 00:41:00 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ typedef struct s_table
 int				print_error(char *str);
 void			print_philo(t_philo *p);
 int				print_status(unsigned int philo_id, t_timer *timer,
-					char *str, pthread_mutex_t	*turn);
+					char *str, pthread_mutex_t *turn);
 
 /*************************************PARSE************************************/
 

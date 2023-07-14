@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 15:57:10 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/13 16:19:35 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/15 01:03:16 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ t_philo	*copy_menu(t_philo *ref)
 	return (menu);
 }
 
-t_table	*set_table(t_philo *ref, pthread_mutex_t **forks, unsigned int ct)
+t_table	*set_table(t_philo *ref, pthread_mutex_t **forks, unsigned int ct, pthread_mutex_t *turn)
 {
 	t_table	*table;
 
@@ -46,6 +46,7 @@ t_table	*set_table(t_philo *ref, pthread_mutex_t **forks, unsigned int ct)
 		table->left_fork = forks[ct - 1];
 	table->right_fork = forks[ct];
 	table->philo_id = ct + 1;
+	table->turn = turn;
 	return (table);
 }
 
@@ -74,6 +75,8 @@ int	unlock_forks(pthread_mutex_t *left, pthread_mutex_t *right)
 
 int	philo_is_finished(t_table *table)
 {
+	if (table->menu == NULL)
+		exit(1);
 	if (table->menu->times == (unsigned int) -1)
 		return (0);
 	//table->menu->times comparer avec le tableau des nombre de fois mange
@@ -84,10 +87,10 @@ void	*live(void *table)
 {
 	t_table	*t;
 
-	t = table;
+	t = (t_table *) table;
 	if (table == NULL)
 		return (NULL);
-	while (!philo_is_finished(table))
+	while (!philo_is_finished(t))
 	{
 		printf("Nouveau tour pour %u\n", t->philo_id);
 		if (lock_forks(t, t->left_fork, t->right_fork) != 0)
@@ -132,14 +135,14 @@ void	philosopher(t_philo *p, t_thread *threads, pthread_mutex_t **forks)
 	t_thread		*cur;
 	t_table			*table;
 	unsigned int	ct;
-	pthread_mutex_t	*turn;
+	pthread_mutex_t	turn;
 
 	cur = threads;
 	ct = 0;
-	turn = 
+	pthread_mutex_init(&turn, NULL);
 	while (cur != NULL)
 	{
-		table = set_table(p, forks, ct++, turn);
+		table = set_table(p, forks, ct++, &turn);
 		if (table == NULL)
 			free_print("Table failed to be initialized.", p, threads, forks);
 		if (pthread_create(&cur->thread, NULL, &live, table) == -1)
@@ -149,6 +152,7 @@ void	philosopher(t_philo *p, t_thread *threads, pthread_mutex_t **forks)
 		}
 		cur = cur->next;
 	}
+	pthread_mutex_destroy(&turn);
 	if (verify_threads(threads) == 0)
 		free_print("One thread failed.", p, threads, forks);
 	printf("True ending\n");
@@ -163,12 +167,17 @@ int	main(int argc, char **argv)
 	if (argc < 5 || argc > 6)
 		print_error("Usage : ./philo <nb> <ttd> <tte> <tts> [nb_e].");
 	philo = ft_parse(argc - 1, argv + 1);
+	if (philo == NULL)
+		printf("PC possede\n");
 	if (philo->nb_philos == 0)
 	{
 		free(philo);
 		return (1);
 	}
 	// print_philo(philo);
+	printf("ERREUR imcprehensibl ; apparement le times est unitialized, a verif avec des writes, mias sinon ca serait mon parsing ????");
+	if (philo != NULL && philo->times != 0)
+		printf("PC possede\n");
 	threads = init_threads(philo);
 	forks = init_forks(philo->nb_philos, philo, threads);
 	philosopher(philo, threads, forks);
