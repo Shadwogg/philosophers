@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/10 12:59:43 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/15 01:00:09 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/17 18:03:07 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,8 @@ int	input_is_invalid(int argc, char **argv)
 		if (is_not_int(argv[ct]))
 			print_error("Should have only int");
 	}
+	if (argc == 5 && ft_atoi(argv[4]) == 0)
+		exit(EXIT_SUCCESS);
 	return (0);
 }
 
@@ -83,14 +85,12 @@ t_philo	*ft_parse(int argc, char **argv)
 	philo = malloc(sizeof(t_philo));
 	if (philo == NULL)
 		print_error("Malloc error in ft_parse()\n");
+	philo->times = 0;
 	philo->nb_philos = arr[0];
 	philo->ttd = arr[1];
 	philo->tte = arr[2];
 	philo->tts = arr[3];
-	philo->times = UINT_MAX;
-	if (philo->times != 0)
-		printf("PC possede\n");
-	if (argc == 4)
+	if (argc == 5)
 		philo->times = arr[4];
 	return (philo);
 }

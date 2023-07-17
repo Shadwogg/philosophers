@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 15:57:13 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/15 00:41:00 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/17 17:04:46 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 # include <limits.h>
 # include <sys/time.h>
 
+// The struct containing parsed informations.
 typedef struct s_philo
 {
 	unsigned int	nb_philos;
@@ -28,6 +29,7 @@ typedef struct s_philo
 	unsigned int	tte;
 	unsigned int	tts;
 	unsigned int	times;
+	struct timeval	start_time;
 }	t_philo;
 
 // Chained list of thread
@@ -38,15 +40,16 @@ typedef struct s_thread
 	pthread_t		thread;
 }	t_thread;
 
-
 // struct timeval | ->tv_usec
 typedef struct s_timer
 {
-	useconds_t		time_alive;
-	unsigned int	time_eaten;
-	// pthread_mutex_t	*mutex;
+	unsigned int	*time_eaten;
+	pthread_mutex_t	*mutex;
+	struct timeval	start;
+	struct timeval	tv;
 }	t_timer;
 
+// View of a philosopher
 typedef struct s_table
 {
 	unsigned int	philo_id;
@@ -59,7 +62,7 @@ typedef struct s_table
 
 int				print_error(char *str);
 void			print_philo(t_philo *p);
-int				print_status(unsigned int philo_id, t_timer *timer,
+int				print_status(unsigned int philo_id, t_timer *start,
 					char *str, pthread_mutex_t *turn);
 
 /*************************************PARSE************************************/
