@@ -6,13 +6,13 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/10 12:59:43 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/17 18:03:07 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/18 00:05:11 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
-pthread_mutex_t	**init_forks(unsigned int nb, t_philo *p, t_thread *t)
+pthread_mutex_t	**init_forks(unsigned int nb, t_info *p, t_thread *t)
 {
 	pthread_mutex_t	**forks;
 	unsigned int	ct;
@@ -36,7 +36,7 @@ pthread_mutex_t	**init_forks(unsigned int nb, t_philo *p, t_thread *t)
 	return (forks);
 }
 
-t_thread	*init_threads(t_philo *philo)
+t_thread	*init_threads(t_info *philo)
 {
 	unsigned int	ct;
 	t_thread		*threads;
@@ -72,17 +72,17 @@ int	input_is_invalid(int argc, char **argv)
 	return (0);
 }
 
-t_philo	*ft_parse(int argc, char **argv)
+t_info	*ft_parse(int argc, char **argv)
 {
 	int		ct;
 	int		arr[5];
-	t_philo	*philo;
+	t_info	*philo;
 
 	input_is_invalid(argc, argv);
 	ct = -1;
 	while (++ct < argc)
 		arr[ct] = ft_atoi(argv[ct]);
-	philo = malloc(sizeof(t_philo));
+	philo = malloc(sizeof(t_info));
 	if (philo == NULL)
 		print_error("Malloc error in ft_parse()\n");
 	philo->times = 0;

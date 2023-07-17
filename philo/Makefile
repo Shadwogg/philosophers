@@ -6,7 +6,7 @@
 #    By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/07/05 15:57:04 by ggiboury          #+#    #+#              #
-#    Updated: 2023/07/13 16:07:36 by ggiboury         ###   ########.fr        #
+#    Updated: 2023/07/18 00:25:50 by ggiboury         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,11 +16,13 @@ FLAGS = -Wall -Werror -Wextra
 
 NAME = philo
 
-SRCS = ft_atoi.c	\
-		ft_utils.c	\
-		ft_free.c	\
-		ft_parse.c	\
-		ft_print.c
+SRCS = init_philosophers.c	\
+		ft_atoi.c			\
+		ft_utils.c			\
+		ft_free.c			\
+		ft_parse.c			\
+		ft_print.c			\
+		philo_life.c
 
 S_MAIN = philosophers.c
 

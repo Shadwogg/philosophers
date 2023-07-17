@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/06 14:39:59 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/15 00:57:31 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/18 00:26:21 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ int	is_not_int(char *nb)
 	return (0);
 }
 
-void	add_list(t_thread **t, t_philo *ref)
+void	add_list(t_thread **t, t_info *ref)
 {
 	t_thread		*cur;
 	unsigned int	ct;
@@ -65,4 +65,20 @@ void	add_list(t_thread **t, t_philo *ref)
 	}
 	cur->next->next = NULL;
 	cur->next->numero = ct;
+}
+
+int	ft_mlsleep(long time_mls)
+{
+	struct timeval	t;
+
+	if (gettimeofday(&t, NULL) != 0)
+		return (1);
+	time_mls = t.tv_sec * 1000 + t.tv_usec / 1000 + time_mls;
+	while (t.tv_sec * 1000 + t.tv_usec / 1000 < time_mls)
+	{
+		if (gettimeofday(&t, NULL) != 0)
+			return (1);
+		usleep(10);
+	}
+	return (0);
 }
