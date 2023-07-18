@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/17 23:35:15 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/18 21:35:18 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/18 23:01:37 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,11 +46,11 @@ int	init_timer(t_philosopher *table, struct timeval start_time)
 t_philosopher	*init_philo_mutex(t_philosopher *philo, unsigned int nb_philos,
 	pthread_mutex_t **forks, pthread_mutex_t *turn)
 {
-	if (philo->philo_id - 1 == 0)
+	if (philo->id - 1 == 0)
 		philo->left_fork = forks[nb_philos - 1];
 	else
-		philo->left_fork = forks[philo->philo_id - 2];
-	philo->right_fork = forks[philo->philo_id - 1];
+		philo->left_fork = forks[philo->id - 2];
+	philo->right_fork = forks[philo->id - 1];
 	philo->turn = turn;
 	philo->m_is_finished = malloc(sizeof(pthread_mutex_t));
 	if (philo->m_is_finished == NULL)
@@ -67,7 +67,7 @@ t_philosopher	*set_philosopher(t_info *ref, pthread_mutex_t **forks, unsigned in
 	table = malloc(sizeof(t_philosopher));
 	if (table == NULL)
 		return (NULL);
-	table->philo_id = ct + 1;
+	table->id = ct + 1;
 	table->menu = copy_menu(ref);
 	if (table->menu == NULL)
 	{

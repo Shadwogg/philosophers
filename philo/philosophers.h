@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 15:57:13 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/18 21:26:42 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/18 23:02:45 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ typedef struct s_info
 	struct timeval	start_time;
 }	t_info;
 
-// Chained list of thread
+// Chained list of thread.
 typedef struct s_thread
 {
 	unsigned int	numero;
@@ -40,7 +40,7 @@ typedef struct s_thread
 	pthread_t		thread;
 }	t_thread;
 
-// struct timeval | ->tv_usec
+// Struct containing counters.
 typedef struct s_timer
 {
 	unsigned int	*time_eaten;
@@ -49,11 +49,11 @@ typedef struct s_timer
 	struct timeval	tv;
 }	t_timer;
 
-// View of a philosopher
+// View of a philosopher.
 typedef struct s_philosopher
 {
 	int				*is_finished;
-	unsigned int	philo_id;
+	unsigned int	id;
 	pthread_mutex_t	*left_fork;
 	pthread_mutex_t	*right_fork;
 	pthread_mutex_t	*turn;
@@ -64,7 +64,7 @@ typedef struct s_philosopher
 
 int				print_error(char *str);
 void			print_info(t_info *p);
-int				print_status(unsigned int philo_id, t_timer *start,
+int				print_status(unsigned int id, t_timer *start,
 					char *str, pthread_mutex_t *turn);
 
 /*************************************PARSE************************************/

@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 15:57:10 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/18 21:54:44 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/18 23:56:39 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,33 +42,70 @@ int	verify_threads(t_thread *threads)
 	return ((int) err);
 }
 
-//Initialize each thread used for each philosopher.
-void	philosopher(t_info *p, t_thread *threads, pthread_mutex_t **forks)
+int	launch_threads(t_info *info, t_thread *threads,
+	pthread_mutex_t **forks, pthread_mutex_t *turn)
 {
-	t_thread		*cur;
-	t_philosopher	*table;
+	t_philosopher	*philo;
 	unsigned int	ct;
-	pthread_mutex_t	turn;
+	t_thread		*cur;
 
-	cur = threads;
 	ct = 0;
-	if (pthread_mutex_init(&turn, NULL) != 0)
-		print_error("TO IMPLENT (philo)");
+	cur = threads;
 	while (cur != NULL)
 	{
-		table = set_philosopher(p, forks, ct++, &turn);
-		if (table == NULL)
-			free_print("Table failed to be initialized.", p, threads, forks);
-		if (pthread_create(&cur->thread, NULL, &live, table) == -1)
+		philo = set_philosopher(info, forks, ct++, turn);
+		if (philo == NULL)
 		{
-			free_table(table);
-			free_print("Thread failed to be initialized.", p, threads, forks);
+			free_print("Philo failed to be initialized.", info, threads, forks);
+			return (1);
+		}
+		if (pthread_create(&cur->thread, NULL, &live, philo) == -1)
+		{
+			free_table(philo);
+			free_print("Thread failed to be initialized.", info, threads, forks);
+			return (1);
 		}
 		cur = cur->next;
 	}
+	return (0);
+}
+
+void	*harvest(void *souls)
+{
+	return (souls);
+}
+
+int	init_death(pthread_t *ending_thread, t_info *info, t_thread *threads)
+{
+	(void) info;
+	(void) threads;
+	// structure stockant la liste des damnes ???
+	if (pthread_create(ending_thread, NULL, &harvest, NULL) != 0)
+		return (1);
+	if (pthread_detach(*ending_thread) != 0)
+		return (1);
+	return (0);
+}
+
+//Initialize each thread used for each philosopher.
+void	philosopher(t_info *p, t_thread *threads, pthread_mutex_t **forks)
+{
+	pthread_mutex_t	turn;
+	pthread_t		end_thread;
+
+	if (pthread_mutex_init(&turn, NULL) != 0)
+		print_error("TO IMPLENT (philo)");
+	if (init_death(&end_thread, p, threads) != 0)
+		print_error("TO IMPPLLEEMMEENNT (philosopher)");
+	if (launch_threads(p, threads, forks, &turn) != 0)
+		return ;
 	if (verify_threads(threads) == 0)
+	{
+		pthread_mutex_destroy(&turn);
 		free_print("One thread failed.", p, threads, forks);
-	pthread_mutex_destroy(&turn);
+	}
+	if (pthread_mutex_destroy(&turn) != 0)
+		free_print("Failed to destroy the turn mutex", p, threads, forks);
 	printf("True ending\n");
 }
 

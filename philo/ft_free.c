@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/07 17:03:35 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/18 21:52:42 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/18 23:57:31 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,6 @@ void	free_table(t_philosopher *philo)
 	free(philo->menu);
 	free(philo->timer);
 	free(philo->is_finished);
-	pthread_mutex_destroy(philo->turn);
 	pthread_mutex_destroy(philo->m_is_finished);
 	free(philo->m_is_finished);
 	free(philo);
