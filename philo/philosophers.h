@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 15:57:13 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/18 00:29:22 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/18 21:26:42 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ typedef struct s_timer
 // View of a philosopher
 typedef struct s_philosopher
 {
-	int				is_finished;
+	int				*is_finished;
 	unsigned int	philo_id;
 	pthread_mutex_t	*left_fork;
 	pthread_mutex_t	*right_fork;

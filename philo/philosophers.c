@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 15:57:10 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/18 00:28:44 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/18 21:54:44 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,20 +23,20 @@ int	all_philo_has_eaten(void *null, unsigned int times)
 int	verify_threads(t_thread *threads)
 {
 	t_thread		*cur;
-	void			*returned_table;
+	void			*returned_philo;
 	char			err;
 
 	cur = threads;
 	err = 1;
-	returned_table = NULL;
+	returned_philo = NULL;
 	while (cur != NULL)
 	{
-		if (pthread_join(cur->thread, returned_table) != 0)
+		if (pthread_join(cur->thread, &returned_philo) != 0)
 			printf("TO IMPLEMENT");
-		if (returned_table == NULL)
+		if (returned_philo == NULL)
 			err = 0;
 		else
-			free_table(returned_table);
+			free_table(returned_philo);
 		cur = cur->next;
 	}
 	return ((int) err);
@@ -46,18 +46,17 @@ int	verify_threads(t_thread *threads)
 void	philosopher(t_info *p, t_thread *threads, pthread_mutex_t **forks)
 {
 	t_thread		*cur;
-	t_philosopher			*table;
+	t_philosopher	*table;
 	unsigned int	ct;
-	pthread_mutex_t	*turn;
+	pthread_mutex_t	turn;
 
 	cur = threads;
 	ct = 0;
-	turn = malloc(sizeof(pthread_mutex_t));
-	if (pthread_mutex_init(turn, NULL) != 0)
+	if (pthread_mutex_init(&turn, NULL) != 0)
 		print_error("TO IMPLENT (philo)");
 	while (cur != NULL)
 	{
-		table = set_philosopher(p, forks, ct++, turn);
+		table = set_philosopher(p, forks, ct++, &turn);
 		if (table == NULL)
 			free_print("Table failed to be initialized.", p, threads, forks);
 		if (pthread_create(&cur->thread, NULL, &live, table) == -1)
@@ -69,9 +68,7 @@ void	philosopher(t_info *p, t_thread *threads, pthread_mutex_t **forks)
 	}
 	if (verify_threads(threads) == 0)
 		free_print("One thread failed.", p, threads, forks);
-	pthread_mutex_destroy(turn);
-	printf("sortie = %p\n", table);
-	// free_table(table);
+	pthread_mutex_destroy(&turn);
 	printf("True ending\n");
 }
 

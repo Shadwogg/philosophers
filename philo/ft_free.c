@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/07 17:03:35 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/18 00:05:11 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/18 21:52:42 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,12 +38,15 @@ void	free_forks(pthread_mutex_t **f, unsigned int nb)
 	free(f);
 }
 
-void	free_table(t_philosopher *table)
+void	free_table(t_philosopher *philo)
 {
-	free(table->menu);
-	pthread_mutex_destroy(table->turn);
-	free(table->timer);
-	free(table);
+	free(philo->menu);
+	free(philo->timer);
+	free(philo->is_finished);
+	pthread_mutex_destroy(philo->turn);
+	pthread_mutex_destroy(philo->m_is_finished);
+	free(philo->m_is_finished);
+	free(philo);
 }
 
 void	fail_forks(char *str, t_info *p, t_thread *t)
