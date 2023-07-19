@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/18 00:24:01 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/19 19:30:03 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/19 21:05:57 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ int	lock_forks(t_philosopher *philo, pthread_mutex_t *left,
 		return (1);
 	if (print_status(philo->id, philo->timer, "is eating", philo->turn) != 1)
 		return (1);
+	philo->timer->time_eaten++;
 	ft_mlsleep(philo->menu->tte);
 	return (0);
 }
@@ -44,11 +45,11 @@ int	philo_is_finished(t_philosopher *philo)
 
 	finished = 0;
 	if (pthread_mutex_lock(philo->m_is_finished) != 0)
-		;
+		printf("ERROR IS FINISHED\n");
 	if (*(philo->is_finished))
 		finished = 1;
 	if (pthread_mutex_unlock(philo->m_is_finished) != 0)
-		;
+		printf("ERROR IS FINISHED end\n");
 	return (finished);
 }
 

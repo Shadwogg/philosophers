@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 15:57:10 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/19 19:31:03 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/19 21:30:20 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,11 +85,13 @@ int	simulation_is_finished(t_controller *ctler)
 
 	ct = 0;
 	ft_mlsleep(30);
+	printf("	%p\n", ctler->philos[2]);
 	while (ct < ctler->number_philo)
 	{
 		//lock
-		printf("DEBUT\n");
+		printf("DEBUT %d\n", ct);
 		cur = ctler->philos[ct];
+		// printf("START %d\n", cur->id);
 		printf("START\n");
 		start = cur->timer->start.tv_sec * 1000
 			+ cur->timer->start.tv_usec / 1000;
@@ -128,20 +130,24 @@ void	*harvest(void *souls)
 
 int	init_death(pthread_t *ending_thread, t_info *info, t_thread *threads)
 {
-	t_controller	controller;
+	t_controller	*controller;
 	t_thread		*cur;
 	unsigned int	ct;
 
-	controller.number_philo = info->nb_philos;
-	controller.philos = malloc(sizeof(t_philosopher *) * info->nb_philos);
+	controller = malloc(sizeof(t_controller *));
+	controller->number_philo = info->nb_philos;
+	controller->philos = malloc(sizeof(t_philosopher *) * info->nb_philos);
 	cur = threads;
 	ct = 0;
 	while (cur != NULL)
 	{
-		controller.philos[ct++] = threads->philo;
+		controller->philos[ct] = cur->philo;
+		printf("	III %d\n", cur->philo->id);
+		printf("	XXX %d\n", controller->philos[ct]->id);
+		ct++;
 		cur = cur->next;
 	}
-	if (controller.philos == NULL)
+	if (controller->philos == NULL)
 		return (1);
 	if (pthread_create(ending_thread, NULL, &harvest, &controller) != 0)
 		return (1);

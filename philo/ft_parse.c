@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/10 12:59:43 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/19 18:15:35 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/19 21:12:22 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,6 @@ t_thread	*init_threads(t_info *info, pthread_mutex_t **forks)
 	t_thread		*threads;
 	t_thread		*cur;
 	pthread_mutex_t	*turn;
-	t_philosopher	*philo;
 
 	threads = malloc(sizeof(t_thread));
 	if (threads == NULL)
@@ -66,14 +65,15 @@ t_thread	*init_threads(t_info *info, pthread_mutex_t **forks)
 	ct = 0;
 	while (cur != NULL)
 	{
-		philo = set_philosopher(info, forks, ct++, turn);
-		if (philo == NULL)
+		printf("TEST x\n");
+		cur->philo = set_philosopher(info, forks, ct++, turn);
+		if (cur->philo == NULL)
 		{
 			free_print("Philo failed to be initialized.", info, threads, forks);
 			return (NULL);
 			// return (1);
 		}
-		cur->philo = philo;
+		printf("	%p\n", cur->philo);
 		cur = cur->next;
 	}
 	return (threads);
