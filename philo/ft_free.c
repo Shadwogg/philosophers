@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/07 17:03:35 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/18 23:57:31 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/19 17:12:54 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ void	free_forks(pthread_mutex_t **f, unsigned int nb)
 	free(f);
 }
 
-void	free_table(t_philosopher *philo)
+void	free_philo(t_philosopher *philo)
 {
 	free(philo->menu);
 	free(philo->timer);

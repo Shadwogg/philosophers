@@ -6,40 +6,40 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/17 23:35:15 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/18 23:01:37 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/19 18:02:18 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
-t_info	*copy_menu(t_info *ref)
+t_info	*copy_menu(t_info *info)
 {
 	t_info	*menu;
 
 	menu = malloc(sizeof(t_info));
 	if (menu == NULL)
 		return (NULL);
-	menu->nb_philos = ref->nb_philos;
-	menu->ttd = ref->ttd;
-	menu->tte = ref->tte;
-	menu->tts = ref->tts;
-	menu->times = ref->times;
+	menu->nb_philos = info->nb_philos;
+	menu->ttd = info->ttd;
+	menu->tte = info->tte;
+	menu->tts = info->tts;
+	menu->times = info->times;
 	return (menu);
 }
 
-int	init_timer(t_philosopher *table, struct timeval start_time)
+int	init_timer(t_philosopher *philo, struct timeval start_time)
 {
-	table->timer = malloc(sizeof(t_timer));
-	if (table->timer == NULL)
+	philo->timer = malloc(sizeof(t_timer));
+	if (philo->timer == NULL)
 	{
-		free(table->menu);
-		free(table);
+		free(philo->menu);
+		free(philo);
 		return (1);
 	}
-	table->timer->start = start_time;
-	table->timer->time_eaten = 0;
-	table->timer->tv.tv_usec = 0;
-	table->timer->tv.tv_sec = 0;
+	philo->timer->start = start_time;
+	philo->timer->time_eaten = 0;
+	philo->timer->tv.tv_usec = 0;
+	philo->timer->tv.tv_sec = 0;
 	return (0);
 }
 
@@ -60,31 +60,32 @@ t_philosopher	*init_philo_mutex(t_philosopher *philo, unsigned int nb_philos,
 	return (philo);
 }
 
-t_philosopher	*set_philosopher(t_info *ref, pthread_mutex_t **forks, unsigned int ct, pthread_mutex_t *turn)
+t_philosopher	*set_philosopher(t_info *info, pthread_mutex_t **forks,
+	unsigned int ct, pthread_mutex_t *turn)
 {
-	t_philosopher	*table;
+	t_philosopher	*philo;
 
-	table = malloc(sizeof(t_philosopher));
-	if (table == NULL)
+	philo = malloc(sizeof(t_philosopher));
+	if (philo == NULL)
 		return (NULL);
-	table->id = ct + 1;
-	table->menu = copy_menu(ref);
-	if (table->menu == NULL)
+	philo->id = ct + 1;
+	philo->menu = copy_menu(info);
+	if (philo->menu == NULL)
 	{
-		free(table);
+		free(philo);
 		return (NULL);
 	}
-	if (init_philo_mutex(table, ref->nb_philos, forks, turn) == NULL)
+	if (init_philo_mutex(philo, info->nb_philos, forks, turn) == NULL)
 	{
-		free_table(table);
+		free_philo(philo);
 		return (NULL);
 	}
-	if (init_timer(table, ref->start_time) != 0)
+	if (init_timer(philo, info->start_time) != 0)
 		return (NULL);
-	table->is_finished = malloc(sizeof(int));
-	if (table->is_finished != NULL)
-		*(table->is_finished) = 0;
+	philo->is_finished = malloc(sizeof(int));
+	if (philo->is_finished != NULL)
+		*(philo->is_finished) = 0;
 	else
-		free_table(table);
-	return (table);
+		free_philo(philo);
+	return (philo);
 }

@@ -6,20 +6,23 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/10 12:59:43 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/18 00:05:11 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/19 18:15:35 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
-pthread_mutex_t	**init_forks(unsigned int nb, t_info *p, t_thread *t)
+pthread_mutex_t	**init_forks(unsigned int nb, t_info *p)
 {
 	pthread_mutex_t	**forks;
 	unsigned int	ct;
 
 	forks = malloc(sizeof(pthread_mutex_t *) * nb);
 	if (forks == NULL)
-		fail_forks("Fork failed to be initialized in init_forks.", p, t);
+	{
+		free(p);
+		print_error("Fork failed to be initialized in init_forks.");
+	}
 	ct = 0;
 	while (ct < nb)
 	{
@@ -27,7 +30,8 @@ pthread_mutex_t	**init_forks(unsigned int nb, t_info *p, t_thread *t)
 		if (forks[ct] == NULL)
 		{
 			free_forks(forks, ct);
-			fail_forks("Fork failed to be initialized in init_forks.", p, t);
+			free(p);
+			print_error("Fork failed to be initialized in init_forks.");
 		}
 		if (pthread_mutex_init(forks[ct], NULL) != 0)
 			print_error("Implement");
@@ -36,22 +40,42 @@ pthread_mutex_t	**init_forks(unsigned int nb, t_info *p, t_thread *t)
 	return (forks);
 }
 
-t_thread	*init_threads(t_info *philo)
+t_thread	*init_threads(t_info *info, pthread_mutex_t **forks)
 {
 	unsigned int	ct;
 	t_thread		*threads;
+	t_thread		*cur;
+	pthread_mutex_t	*turn;
+	t_philosopher	*philo;
 
 	threads = malloc(sizeof(t_thread));
 	if (threads == NULL)
 	{
-		free(philo);
+		free(info);
 		print_error("t_thread failed to be malloc.");
 	}
 	threads->next = NULL;
 	threads->numero = 1;
 	ct = 1;
-	while (ct++ < philo->nb_philos)
-		add_list(&threads, philo);
+	while (ct++ < info->nb_philos)
+		add_list(&threads, info);
+	turn = malloc(sizeof(pthread_mutex_t));
+	if (pthread_mutex_init(turn, NULL) != 0)
+		print_error("TO IMPLENT (philo)");
+	cur = threads;
+	ct = 0;
+	while (cur != NULL)
+	{
+		philo = set_philosopher(info, forks, ct++, turn);
+		if (philo == NULL)
+		{
+			free_print("Philo failed to be initialized.", info, threads, forks);
+			return (NULL);
+			// return (1);
+		}
+		cur->philo = philo;
+		cur = cur->next;
+	}
 	return (threads);
 }
 
