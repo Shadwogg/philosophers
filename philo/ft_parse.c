@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/10 12:59:43 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/19 21:12:22 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/22 14:30:10 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,17 +55,19 @@ t_thread	*init_threads(t_info *info, pthread_mutex_t **forks)
 	}
 	threads->next = NULL;
 	threads->numero = 1;
+	threads->philo = NULL;
 	ct = 1;
 	while (ct++ < info->nb_philos)
 		add_list(&threads, info);
 	turn = malloc(sizeof(pthread_mutex_t));
+	if (turn == NULL)
+		print_error("A implementer");
 	if (pthread_mutex_init(turn, NULL) != 0)
 		print_error("TO IMPLENT (philo)");
 	cur = threads;
 	ct = 0;
 	while (cur != NULL)
 	{
-		printf("TEST x\n");
 		cur->philo = set_philosopher(info, forks, ct++, turn);
 		if (cur->philo == NULL)
 		{
@@ -73,7 +75,6 @@ t_thread	*init_threads(t_info *info, pthread_mutex_t **forks)
 			return (NULL);
 			// return (1);
 		}
-		printf("	%p\n", cur->philo);
 		cur = cur->next;
 	}
 	return (threads);

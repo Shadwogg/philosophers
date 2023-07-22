@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 15:57:13 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/19 19:29:58 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/22 17:34:04 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,7 @@ typedef struct s_timer
 	unsigned int	time_eaten;
 	pthread_mutex_t	*mutex;
 	struct timeval	start;
+	struct timeval	last_eaten;
 	struct timeval	tv;
 }	t_timer;
 

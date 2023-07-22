@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/06 14:39:59 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/18 00:26:21 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/22 14:23:49 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,8 +63,9 @@ void	add_list(t_thread **t, t_info *ref)
 		free_threads(*t);
 		print_error("t_thread failed to be malloc.");
 	}
-	cur->next->next = NULL;
 	cur->next->numero = ct;
+	cur->next->next = NULL;
+	cur->next->philo = NULL;
 }
 
 int	ft_mlsleep(long time_mls)

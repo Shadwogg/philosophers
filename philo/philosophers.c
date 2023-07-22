@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 15:57:10 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/19 21:30:20 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/22 17:23:12 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,26 +84,21 @@ int	simulation_is_finished(t_controller *ctler)
 	struct timeval	tv;
 
 	ct = 0;
-	ft_mlsleep(30);
-	printf("	%p\n", ctler->philos[2]);
+	// ft_mlsleep(10);
 	while (ct < ctler->number_philo)
 	{
 		//lock
-		printf("DEBUT %d\n", ct);
 		cur = ctler->philos[ct];
 		// printf("START %d\n", cur->id);
-		printf("START\n");
 		start = cur->timer->start.tv_sec * 1000
 			+ cur->timer->start.tv_usec / 1000;
 		if (gettimeofday(&tv, NULL) != 0)
 			return (-1);
-		printf("HERE\n");
 		actual = (tv.tv_sec * 1000 + tv.tv_usec / 1000)
 			- cur->timer->time_eaten * (cur->menu->tte);
 		//unlock
-		printf("LA\n");
 		if (actual - start >= cur->menu->ttd)
-			return (1);
+			return (ct + 1);
 		ct++;
 	}
 	return (0);
@@ -112,18 +107,21 @@ int	simulation_is_finished(t_controller *ctler)
 void	*harvest(void *souls)
 {
 	t_controller	*ctler;
+	int				philo;
 
+	if (souls == NULL)
+		return (NULL);
 	ctler = souls;
 	//Wait every thread to begin ?
-	// while (0)
-	// {
-
-	// }
-	while (!simulation_is_finished(ctler)
+	philo = simulation_is_finished(ctler);
+	while (philo == 0
 		&& !all_philo_has_eaten(ctler->philos, ctler->number_philo))
 	{
 		ft_mlsleep(2);
+		philo = simulation_is_finished(ctler);
 	}
+	print_status(ctler->philos[philo]->id, ctler->philos[philo]->timer,
+		"died", ctler->philos[philo]->turn);
 	terminate_all(ctler->philos, ctler->number_philo);
 	return (souls);
 }
@@ -134,7 +132,9 @@ int	init_death(pthread_t *ending_thread, t_info *info, t_thread *threads)
 	t_thread		*cur;
 	unsigned int	ct;
 
-	controller = malloc(sizeof(t_controller *));
+	controller = malloc(sizeof(t_controller)); // ERR : pointer en trop
+	if (controller == NULL)
+		print_error("Controller null");
 	controller->number_philo = info->nb_philos;
 	controller->philos = malloc(sizeof(t_philosopher *) * info->nb_philos);
 	cur = threads;
@@ -142,14 +142,12 @@ int	init_death(pthread_t *ending_thread, t_info *info, t_thread *threads)
 	while (cur != NULL)
 	{
 		controller->philos[ct] = cur->philo;
-		printf("	III %d\n", cur->philo->id);
-		printf("	XXX %d\n", controller->philos[ct]->id);
 		ct++;
 		cur = cur->next;
 	}
 	if (controller->philos == NULL)
 		return (1);
-	if (pthread_create(ending_thread, NULL, &harvest, &controller) != 0)
+	if (pthread_create(ending_thread, NULL, &harvest, controller) != 0)
 		return (1);
 	if (pthread_detach(*ending_thread) != 0)
 		return (1);
@@ -163,10 +161,8 @@ void	philosopher(t_info *p, t_thread *threads, pthread_mutex_t **forks)
 
 	if (init_death(&end_thread, p, threads) != 0)
 		print_error("TO IMPPLLEEMMEENNT (philosopher)");
-	printf("Death initialized\n");
 	if (launch_threads(p, threads, forks) != 0)
 		return ;
-	printf("Threads launched\n");
 	if (verify_threads(threads) == 0)
 	{
 		free_print("One thread failed.", p, threads, forks);

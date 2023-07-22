@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/17 23:35:15 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/19 18:02:18 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/22 15:16:21 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,6 +86,9 @@ t_philosopher	*set_philosopher(t_info *info, pthread_mutex_t **forks,
 	if (philo->is_finished != NULL)
 		*(philo->is_finished) = 0;
 	else
+	{
 		free_philo(philo);
+		return (NULL);
+	}
 	return (philo);
 }
