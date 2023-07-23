@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 15:57:10 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/22 17:23:12 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/23 15:01:31 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,29 @@
 
 int	all_philo_has_eaten(t_philosopher **philos, unsigned int nb)
 {
-	(void) philos;
-	(void) nb;
-	return (0);
+	unsigned int	ct;
+	t_timer			*cur;
+
+	ct = 0;
+	while (ct < nb)
+	{
+		cur = philos[ct]->timer;
+		if (pthread_mutex_lock(cur->mutex) != 0)
+			return (-1);
+		if (philos[ct]->menu->times == 0 ||
+			cur->time_eaten < philos[ct]->menu->times)
+		{
+			// printf("time to eat %d\n", philos[ct]->menu->times);
+			// printf("time eaten %d\n", cur->time_eaten);
+			if (pthread_mutex_unlock(cur->mutex) != 0)
+				return (-1);
+			return (0);
+		}
+		if (pthread_mutex_unlock(cur->mutex) != 0)
+			return (-1);
+		ct++;
+	}
+	return (1);
 }
 
 // Verify that each thread ended correctly, if not return 0.
@@ -84,14 +104,13 @@ int	simulation_is_finished(t_controller *ctler)
 	struct timeval	tv;
 
 	ct = 0;
-	// ft_mlsleep(10);
 	while (ct < ctler->number_philo)
 	{
 		//lock
 		cur = ctler->philos[ct];
 		// printf("START %d\n", cur->id);
-		start = cur->timer->start.tv_sec * 1000
-			+ cur->timer->start.tv_usec / 1000;
+		start = cur->timer->last_eaten.tv_sec * 1000
+			+ cur->timer->last_eaten.tv_usec / 1000;
 		if (gettimeofday(&tv, NULL) != 0)
 			return (-1);
 		actual = (tv.tv_sec * 1000 + tv.tv_usec / 1000)

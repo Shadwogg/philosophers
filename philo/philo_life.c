@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/18 00:24:01 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/22 17:43:20 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/23 15:02:12 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,14 @@ int	lock_forks(t_philosopher *philo, pthread_mutex_t *left,
 		return (1);
 	if (print_status(philo->id, philo->timer, "has taken a fork", philo->turn) != 1)
 		return (1);
+	if (pthread_mutex_lock(philo->timer->mutex) != 0)
+		return (1);
+	if (gettimeofday(&(philo->timer->last_eaten), NULL) != 0)
+		return (1);
 	philo->timer->time_eaten++;
 	if (print_status(philo->id, philo->timer, "is eating", philo->turn) != 1)
+		return (1);
+	if (pthread_mutex_unlock(philo->timer->mutex) != 0)
 		return (1);
 	ft_mlsleep(philo->menu->tte);
 	return (0);
