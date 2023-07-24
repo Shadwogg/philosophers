@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/17 23:35:15 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/24 15:00:48 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/24 18:42:49 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,8 +39,8 @@ int	init_timer(t_philosopher *philo, struct timeval start_time)
 	philo->timer->start = start_time;
 	philo->timer->last_eaten = start_time;
 	philo->timer->time_eaten = 0;
-	philo->timer->tv.tv_usec = 0;
-	philo->timer->tv.tv_sec = 0;
+	// philo->timer->tv.tv_usec = 0;
+	// philo->timer->tv.tv_sec = 0;
 	philo->timer->mutex = malloc(sizeof(pthread_mutex_t));
 	if (philo->timer->mutex == NULL)
 		return (1);

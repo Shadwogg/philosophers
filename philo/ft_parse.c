@@ -6,23 +6,20 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/10 12:59:43 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/24 14:55:10 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/24 18:58:50 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
-pthread_mutex_t	**init_forks(unsigned int nb, t_info *p)
+pthread_mutex_t	**init_forks(unsigned int nb)
 {
 	pthread_mutex_t	**forks;
 	unsigned int	ct;
 
 	forks = malloc(sizeof(pthread_mutex_t *) * nb);
 	if (forks == NULL)
-	{
-		free(p);
-		print_error("Fork failed to be initialized in init_forks.");
-	}
+		return (NULL);
 	ct = 0;
 	while (ct < nb)
 	{
@@ -30,11 +27,13 @@ pthread_mutex_t	**init_forks(unsigned int nb, t_info *p)
 		if (forks[ct] == NULL)
 		{
 			free_forks(forks, ct);
-			free(p);
-			print_error("Fork failed to be initialized in init_forks.");
+			return (NULL);
 		}
 		if (pthread_mutex_init(forks[ct], NULL) != 0)
-			print_error("Implement");
+		{
+			free_forks(forks, ct);
+			return (NULL);
+		}
 		ct++;
 	}
 	return (forks);
@@ -88,9 +87,9 @@ int	input_is_invalid(int argc, char **argv)
 	while (++ct < argc)
 	{
 		if (is_not_number(argv[ct]))
-			print_error("Should only have strict positive numbers");
+			print_error("Only positive numbers are allowed");
 		if (is_not_int(argv[ct]))
-			print_error("Should have only int");
+			print_error("Only strict positive int are allowed");
 	}
 	if (argc == 5 && ft_atoi(argv[4]) == 0)
 		exit(EXIT_SUCCESS);

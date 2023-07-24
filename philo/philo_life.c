@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/18 00:24:01 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/24 15:25:27 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/24 18:45:47 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ int	lock_forks(t_philosopher *philo, pthread_mutex_t *left,
 {
 	if (pthread_mutex_lock(left) != 0)
 		return (1);
-	if (print_status(philo->id, philo->timer, "has taken a fork", philo->turn) != 1)
+	if (print_status(philo, "has taken a fork", 0) != 1)
 		return (1);
 	if (left == right)
 	{
@@ -29,16 +29,16 @@ int	lock_forks(t_philosopher *philo, pthread_mutex_t *left,
 		return (1);
 	if (philo_is_finished(philo))
 		return (0);
-	if (print_status(philo->id, philo->timer, "has taken a fork", philo->turn) != 1)
+	if (print_status(philo, "has taken a fork", 0) != 1)
 		return (1);
 	if (pthread_mutex_lock(philo->timer->mutex) != 0)
 		return (1);
-	if (gettimeofday(&(philo->timer->last_eaten), NULL) != 0)
-		return (1);
+	philo->timer->last_eaten.tv_sec = philo->timer->tv->tv_sec;
+	philo->timer->last_eaten.tv_usec = philo->timer->tv->tv_usec;
 	philo->timer->time_eaten++;
 	if (philo_is_finished(philo))
 		return (0);
-	if (print_status(philo->id, philo->timer, "is eating", philo->turn) != 1)
+	if (print_status(philo, "is eating", 0) != 1)
 		return (1);
 	if (pthread_mutex_unlock(philo->timer->mutex) != 0)
 		return (1);
@@ -49,9 +49,9 @@ int	lock_forks(t_philosopher *philo, pthread_mutex_t *left,
 int	unlock_forks(pthread_mutex_t *left, pthread_mutex_t *right)
 {
 	if (pthread_mutex_unlock(left) != 0)
-		return (1);
+		return (-1);
 	if (pthread_mutex_unlock(right) != 0)
-		return (1);
+		return (-1);
 	return (0);
 }
 
@@ -73,11 +73,11 @@ void	philo_sleep(t_philosopher *t)
 {
 	if (philo_is_finished(t))
 		return ;
-	print_status(t->id, t->timer, "is sleeping", t->turn);
+	print_status(t, "is sleeping", 0);
 	ft_mlsleep(t->menu->tts);
 	if (philo_is_finished(t))
 		return ;
-	print_status(t->id, t->timer, "is thinking", t->turn);
+	print_status(t, "is thinking", 0);
 }
 
 void	*live(void *philo)

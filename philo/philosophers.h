@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 15:57:13 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/24 14:28:03 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/24 19:00:33 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ typedef struct s_timer
 	pthread_mutex_t	*mutex;
 	struct timeval	start;
 	struct timeval	last_eaten;
-	struct timeval	tv;
+	struct timeval	*tv;
 }	t_timer;
 
 // View of a philosopher.
@@ -73,15 +73,14 @@ typedef struct s_controller
 
 int				print_error(char *str);
 void			print_info(t_info *p);
-int				print_status(unsigned int id, t_timer *start,
-					char *str, pthread_mutex_t *turn);
+int				print_status(t_philosopher *philo, char *str, int death);
 
 /*************************************PARSE************************************/
 
 void			add_list(t_thread **t, t_info *ref);
 int				input_is_invalid(int argc, char **argv);
 t_info			*ft_parse(int argc, char **argv);
-pthread_mutex_t	**init_forks(unsigned int nb, t_info *p);
+pthread_mutex_t	**init_forks(unsigned int nb);
 t_thread		*init_threads(t_info *philo, pthread_mutex_t **forks);
 t_philosopher	*init_philo_mutex(t_philosopher *philo, unsigned int nb_philo,
 					pthread_mutex_t **forks, pthread_mutex_t *turn);
@@ -99,10 +98,10 @@ char			*ft_itoa(unsigned int n);
 
 int				ft_mlsleep(long time_mls);
 
+void			free_controller(t_controller *ctler);
 void			free_threads(t_thread *t);
-void			free_forks(pthread_mutex_t **f, unsigned int nb);
+void			free_forks(pthread_mutex_t **forks, unsigned int nb);
 void			free_philo(t_philosopher *philo);
-void			fail_forks(char *str, t_info *p, t_thread *t);
 void			free_print(char *str, t_info *p, t_thread *t,
 					pthread_mutex_t **f);
 /***********************************PHILO_LIFE*********************************/

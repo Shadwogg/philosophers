@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 15:57:10 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/24 15:51:09 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/24 19:06:07 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,28 +97,28 @@ int	terminate_all(t_philosopher **philos, unsigned int nb)
 
 int	simulation_is_finished(t_controller *ctler)
 {
-	unsigned int	ct;
+	int				ct;
 	t_philosopher	*cur;
 	time_t			start;
 	time_t			actual;
 	struct timeval	tv;
 
-	ct = 0;
-	while (ct < ctler->number_philo)
+	ct = -1;
+	while ((unsigned int) ++ct < ctler->number_philo)
 	{
-		//lock
 		cur = ctler->philos[ct];
-		// printf("START %d\n", cur->id);
 		start = cur->timer->last_eaten.tv_sec * 1000
 			+ cur->timer->last_eaten.tv_usec / 1000;
-		if (gettimeofday(&tv, NULL) != 0)
+		if (pthread_mutex_lock(cur->timer->mutex) != 0)
+			return (-1);
+		tv.tv_sec = cur->timer->tv->tv_sec;
+		tv.tv_usec = cur->timer->tv->tv_usec;
+		if (pthread_mutex_unlock(cur->timer->mutex) != 0)
 			return (-1);
 		actual = (tv.tv_sec * 1000 + tv.tv_usec / 1000)
 			- cur->timer->time_eaten * (cur->menu->tte);
-		//unlock
 		if (actual - start >= cur->menu->ttd)
 			return (ct + 1);
-		ct++;
 	}
 	return (0);
 }
@@ -140,8 +140,7 @@ void	*harvest(void *souls)
 	}
 	terminate_all(ctler->philos, ctler->number_philo);
 	if (philo != 0)
-		print_status(ctler->philos[philo - 1]->id, ctler->philos[philo - 1]->timer,
-			"died", ctler->philos[philo - 1]->turn);
+		print_status(ctler->philos[philo - 1], "died", 1);
 	return (souls);
 }
 
@@ -172,6 +171,24 @@ int	init_death(pthread_t *ending_thread, t_info *info, t_thread *threads)
 		return (1);
 	return (0);
 }
+// Chaue Philo a un pointeur vers timer qui a une ressoure partagé, tv
+int	set_timers_philosophers(t_philosopher **philos, unsigned int nb)
+{
+	unsigned int	ct;
+
+	ct = 0;
+	while (ct < nb)
+	{
+		// philos[ct]->timer->
+		if (pthread_mutex_lock(philos[ct]->timer->mutex) != 0)
+			return (-1);
+		;
+		if (pthread_mutex_unlock(philos[ct]->timer->mutex) != 0)
+			return (-1);
+		ct++;
+	}
+	return (0);
+}
 
 void	*set_timers(void *souls)
 {
@@ -183,7 +200,9 @@ void	*set_timers(void *souls)
 	while (!simulation_is_finished(ctler))
 	{
 		ft_mlsleep(1);
+		set_timers_philosophers(ctler->philos, ctler->number_philo);
 	}
+	free_controller(ctler);
 	return (souls);
 }
 
@@ -208,11 +227,10 @@ int	init_watch(pthread_t *watch_thread, t_info *info, t_thread *threads)
 	}
 	if (watch->philos == NULL)
 		return (1);
-	(void) watch_thread;
-	// if (pthread_create(watch_thread, NULL, &set_timers, watch) != 0)
-	// 	return (1);
-	// if (pthread_detach(*watch_thread) != 0)
-	// 	return (1);
+	if (pthread_create(watch_thread, NULL, &set_timers, watch) != 0)
+		return (1);
+	if (pthread_detach(*watch_thread) != 0)
+		return (1);
 	return (0);
 }
 
@@ -235,7 +253,6 @@ void	philosopher(t_info *p, t_thread *threads, pthread_mutex_t **forks)
 	}
 	// if (pthread_mutex_destroy(&turn) != 0)
 	// 	free_print("Failed to destroy the turn mutex", p, threads, forks);
-	printf("True ending\n");
 }
 
 int	main(int argc, char **argv)
@@ -248,12 +265,14 @@ int	main(int argc, char **argv)
 	if (argc < 5 || argc > 6)
 		print_error("Usage : ./philo <nb> <ttd> <tte> <tts> [nb_e].");
 	philo = ft_parse(argc - 1, argv + 1);
-	if (philo->nb_philos == 0)
+	printf("SF normal, didnt implement yet le malloc de l'horloge commune\n");
+	forks = init_forks(philo->nb_philos);
+	if (forks == NULL)
 	{
 		free(philo);
-		return (1);
+		print_error("Forks failed to be initialized.");
 	}
-	forks = init_forks(philo->nb_philos, philo);
+	// All good
 	if (gettimeofday(&tv, NULL) != 0)
 		free_print("Error while getting the time", philo, NULL, forks);
 	philo->start_time = tv;
