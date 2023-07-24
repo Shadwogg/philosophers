@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/18 00:24:01 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/23 15:02:12 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/24 15:25:27 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,16 @@ int	lock_forks(t_philosopher *philo, pthread_mutex_t *left,
 		return (1);
 	if (print_status(philo->id, philo->timer, "has taken a fork", philo->turn) != 1)
 		return (1);
+	if (left == right)
+	{
+		printf("Test\n");
+		ft_mlsleep(philo->menu->ttd - 1);
+		return (0);
+	}
 	if (pthread_mutex_lock(right) != 0)
 		return (1);
+	if (philo_is_finished(philo))
+		return (0);
 	if (print_status(philo->id, philo->timer, "has taken a fork", philo->turn) != 1)
 		return (1);
 	if (pthread_mutex_lock(philo->timer->mutex) != 0)
@@ -28,6 +36,8 @@ int	lock_forks(t_philosopher *philo, pthread_mutex_t *left,
 	if (gettimeofday(&(philo->timer->last_eaten), NULL) != 0)
 		return (1);
 	philo->timer->time_eaten++;
+	if (philo_is_finished(philo))
+		return (0);
 	if (print_status(philo->id, philo->timer, "is eating", philo->turn) != 1)
 		return (1);
 	if (pthread_mutex_unlock(philo->timer->mutex) != 0)
@@ -65,6 +75,8 @@ void	philo_sleep(t_philosopher *t)
 		return ;
 	print_status(t->id, t->timer, "is sleeping", t->turn);
 	ft_mlsleep(t->menu->tts);
+	if (philo_is_finished(t))
+		return ;
 	print_status(t->id, t->timer, "is thinking", t->turn);
 }
 
@@ -78,7 +90,7 @@ void	*live(void *philo)
 	while (!philo_is_finished(t))
 	{
 		if (t->timer->time_eaten == 0 && t->id % 2 == 1)
-			ft_mlsleep(10);
+			ft_mlsleep(t->menu->tte / 2);
 		if (philo_is_finished(t))
 			return (t);
 		if (lock_forks(t, t->left_fork, t->right_fork) != 0)

@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/10 12:59:43 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/22 14:30:10 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/24 14:55:10 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,7 @@ int	input_is_invalid(int argc, char **argv)
 	while (++ct < argc)
 	{
 		if (is_not_number(argv[ct]))
-			print_error("Should only have positive numbers");
+			print_error("Should only have strict positive numbers");
 		if (is_not_int(argv[ct]))
 			print_error("Should have only int");
 	}

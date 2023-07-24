@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 15:57:10 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/23 15:01:31 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/24 15:51:09 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,7 +131,6 @@ void	*harvest(void *souls)
 	if (souls == NULL)
 		return (NULL);
 	ctler = souls;
-	//Wait every thread to begin ?
 	philo = simulation_is_finished(ctler);
 	while (philo == 0
 		&& !all_philo_has_eaten(ctler->philos, ctler->number_philo))
@@ -139,9 +138,10 @@ void	*harvest(void *souls)
 		ft_mlsleep(2);
 		philo = simulation_is_finished(ctler);
 	}
-	print_status(ctler->philos[philo]->id, ctler->philos[philo]->timer,
-		"died", ctler->philos[philo]->turn);
 	terminate_all(ctler->philos, ctler->number_philo);
+	if (philo != 0)
+		print_status(ctler->philos[philo - 1]->id, ctler->philos[philo - 1]->timer,
+			"died", ctler->philos[philo - 1]->turn);
 	return (souls);
 }
 
@@ -151,7 +151,7 @@ int	init_death(pthread_t *ending_thread, t_info *info, t_thread *threads)
 	t_thread		*cur;
 	unsigned int	ct;
 
-	controller = malloc(sizeof(t_controller)); // ERR : pointer en trop
+	controller = malloc(sizeof(t_controller));
 	if (controller == NULL)
 		print_error("Controller null");
 	controller->number_philo = info->nb_philos;
@@ -173,13 +173,60 @@ int	init_death(pthread_t *ending_thread, t_info *info, t_thread *threads)
 	return (0);
 }
 
+void	*set_timers(void *souls)
+{
+	t_controller	*ctler;
+
+	if (souls == NULL)
+		return (NULL);
+	ctler = souls;
+	while (!simulation_is_finished(ctler))
+	{
+		ft_mlsleep(1);
+	}
+	return (souls);
+}
+
+int	init_watch(pthread_t *watch_thread, t_info *info, t_thread *threads)
+{
+	t_controller	*watch;
+	t_thread		*cur;
+	unsigned int	ct;
+
+	watch = malloc(sizeof(t_controller));
+	if (watch == NULL)
+		print_error("Controller null");
+	watch->number_philo = info->nb_philos;
+	watch->philos = malloc(sizeof(t_philosopher *) * info->nb_philos);
+	cur = threads;
+	ct = 0;
+	while (cur != NULL)
+	{
+		watch->philos[ct] = cur->philo;
+		ct++;
+		cur = cur->next;
+	}
+	if (watch->philos == NULL)
+		return (1);
+	(void) watch_thread;
+	// if (pthread_create(watch_thread, NULL, &set_timers, watch) != 0)
+	// 	return (1);
+	// if (pthread_detach(*watch_thread) != 0)
+	// 	return (1);
+	return (0);
+}
+
+
 //Initialize each thread used for each philosopher.
 void	philosopher(t_info *p, t_thread *threads, pthread_mutex_t **forks)
 {
 	pthread_t		end_thread;
+	pthread_t		watch_thread;
 
 	if (init_death(&end_thread, p, threads) != 0)
 		print_error("TO IMPPLLEEMMEENNT (philosopher)");
+	if (init_watch(&watch_thread, p, threads) != 0)
+		print_error("TO implement");
 	if (launch_threads(p, threads, forks) != 0)
 		return ;
 	if (verify_threads(threads) == 0)

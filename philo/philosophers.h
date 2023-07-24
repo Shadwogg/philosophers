@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 15:57:13 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/22 17:34:04 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/24 14:28:03 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 # include <pthread.h>
 # include <limits.h>
 # include <sys/time.h>
+# include <errno.h>
 
 // The struct containing parsed informations.
 typedef struct s_info

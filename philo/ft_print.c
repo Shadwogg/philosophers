@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/10 13:15:58 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/19 18:16:03 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/24 14:10:04 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,9 +62,9 @@ int	print_status(unsigned int id, t_timer *timer,
 		return (0);
 	now = (timer->tv.tv_sec * 1000 + timer->tv.tv_usec / 1000)
 		- (timer->start.tv_sec * 1000 + timer->start.tv_usec / 1000);
-	color_print(id);
+	// color_print(id);
 	printf("%u %u %s\n", now, id, str);
-	printf("\033[00m");
+	// printf("\033[00m");
 	if (pthread_mutex_unlock(turn) != 0)
 		return (0);
 	return (1);

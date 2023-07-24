@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/06 14:39:59 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/22 14:23:49 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/24 14:55:41 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,8 @@ int	is_not_int(char *nb)
 			break ;
 		ct++;
 	}
+	if (tmp == 0)
+		return (1);
 	if (tmp > UINT_MAX)
 		return (1);
 	return (0);
