@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/10 13:15:58 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/24 18:44:39 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/25 18:58:41 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ void	print_info(t_info *p)
 	printf("tte = %u\ntts = %u\ntimes = %u\n", p->tte, p->tts, p->times);
 }
 
+// default color = "\033[00m"
 void	color_print(unsigned int id)
 {
 	if (id % 8 == 0)
@@ -59,23 +60,21 @@ int	print_status(t_philosopher *philo, char *str, int has_died)
 	suseconds_t	usec;
 	suseconds_t	start_usec;
 
-	if (pthread_mutex_lock(philo->timer->mutex) != 0)
+	if (pthread_mutex_lock(philo->timer->mutex_clock) != 0)
 		return (-1);
-	sec = philo->timer->tv->tv_sec;
-	usec = philo->timer->tv->tv_usec;
+	sec = philo->timer->clock->tv_sec;
+	usec = philo->timer->clock->tv_usec;
 	start_sec = philo->timer->start.tv_sec;
 	start_usec = philo->timer->start.tv_usec;
-	if (pthread_mutex_unlock(philo->timer->mutex) != 0)
+	if (pthread_mutex_unlock(philo->timer->mutex_clock) != 0)
 		return (-1);
-	// color_print(id);
 	if (pthread_mutex_lock(philo->turn) != 0)
-		return (0);
+		return (-1);
 	if (someone_has_died != 1)
 		printf("%ld %u %s\n", (sec * 1000 + usec / 1000)
 			- (start_sec * 1000 + start_usec / 1000), philo->id, str);
-	// printf("\033[00m");
 	if (pthread_mutex_unlock(philo->turn) != 0)
-		return (0);
+		return (-1);
 	someone_has_died |= has_died;
-	return (1);
+	return (0);
 }

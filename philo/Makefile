@@ -6,7 +6,7 @@
 #    By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/07/05 15:57:04 by ggiboury          #+#    #+#              #
-#    Updated: 2023/07/24 16:14:51 by ggiboury         ###   ########.fr        #
+#    Updated: 2023/07/25 16:44:15 by ggiboury         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,6 +18,8 @@ NAME = philo
 
 SRCS = init_philosophers.c	\
 		ft_atoi.c			\
+		ft_death.c			\
+		ft_clock.c			\
 		ft_utils.c			\
 		ft_free.c			\
 		ft_parse.c			\

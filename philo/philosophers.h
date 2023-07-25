@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 15:57:13 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/24 19:00:33 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/25 18:55:33 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,10 +46,11 @@ typedef struct s_thread
 typedef struct s_timer
 {
 	unsigned int	time_eaten;
-	pthread_mutex_t	*mutex;
+	pthread_mutex_t	*mutex_time_eaten;
 	struct timeval	start;
 	struct timeval	last_eaten;
-	struct timeval	*tv;
+	pthread_mutex_t	*mutex_clock;
+	struct timeval	*clock;
 }	t_timer;
 
 // View of a philosopher.
@@ -62,7 +63,7 @@ typedef struct s_philosopher
 	pthread_mutex_t	*turn;
 	t_info			*menu;
 	t_timer			*timer;
-	pthread_mutex_t	*m_is_finished;
+	pthread_mutex_t	*mutex_is_finished;
 }	t_philosopher;
 
 typedef struct s_controller
@@ -96,9 +97,9 @@ int				is_not_int(char *nb);
 int				ft_atoi(const char *nptr);
 char			*ft_itoa(unsigned int n);
 
-int				ft_mlsleep(long time_mls);
+int				ft_mlsleep(long time_mls, t_timer *t);
 
-void			free_controller(t_controller *ctler);
+void			*free_controller(t_controller *ctler);
 void			free_threads(t_thread *t);
 void			free_forks(pthread_mutex_t **forks, unsigned int nb);
 void			free_philo(t_philosopher *philo);
@@ -111,6 +112,18 @@ int				lock_forks(t_philosopher *philo, pthread_mutex_t *left,
 					pthread_mutex_t *right);
 int				unlock_forks(pthread_mutex_t *left, pthread_mutex_t *right);
 int				philo_is_finished(t_philosopher *philo);
-void			philo_sleep(t_philosopher *p);
+int				philo_sleep(t_philosopher *p);
+
+/***********************************PHILO_DEATH********************************/
+
+int				terminate_all(t_philosopher **philos, unsigned int nb);
+int				simulation_is_finished(t_controller *ctler);
+int				all_philo_has_eaten(t_philosopher **philos, unsigned int nb);
+void			*harvest(void *souls);
+
+/**********************************TIME_OF_PHILO*******************************/
+
+int				update_clock(t_timer *clock);
+void			*set_timers(void *souls);
 
 #endif

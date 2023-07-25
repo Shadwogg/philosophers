@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/17 23:35:15 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/24 18:42:49 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/25 19:02:44 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,15 +39,13 @@ int	init_timer(t_philosopher *philo, struct timeval start_time)
 	philo->timer->start = start_time;
 	philo->timer->last_eaten = start_time;
 	philo->timer->time_eaten = 0;
-	// philo->timer->tv.tv_usec = 0;
-	// philo->timer->tv.tv_sec = 0;
-	philo->timer->mutex = malloc(sizeof(pthread_mutex_t));
-	if (philo->timer->mutex == NULL)
+	philo->timer->mutex_time_eaten = malloc(sizeof(pthread_mutex_t));
+	if (philo->timer->mutex_time_eaten == NULL)
 		return (1);
-	if (pthread_mutex_init(philo->timer->mutex, NULL) != 0)
+	if (pthread_mutex_init(philo->timer->mutex_time_eaten, NULL) != 0)
 	{
 		free(philo->menu);
-		free(philo->timer->mutex);
+		free(philo->timer->mutex_time_eaten);
 		free(philo);
 		return (1);
 	}
@@ -63,11 +61,14 @@ t_philosopher	*init_philo_mutex(t_philosopher *philo, unsigned int nb_philos,
 		philo->left_fork = forks[philo->id - 2];
 	philo->right_fork = forks[philo->id - 1];
 	philo->turn = turn;
-	philo->m_is_finished = malloc(sizeof(pthread_mutex_t));
-	if (philo->m_is_finished == NULL)
+	philo->mutex_is_finished = malloc(sizeof(pthread_mutex_t));
+	if (philo->mutex_is_finished == NULL)
 		return (NULL);
-	if (pthread_mutex_init(philo->m_is_finished, NULL) != 0)
+	if (pthread_mutex_init(philo->mutex_is_finished, NULL) != 0)
+	{
+		free(philo->mutex_is_finished);
 		return (NULL);
+	}
 	return (philo);
 }
 
