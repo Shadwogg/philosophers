@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/06 14:39:59 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/25 16:23:39 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/26 00:33:00 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,16 +76,20 @@ int	ft_mlsleep(long time_mls, t_timer *timer)
 
 	if (pthread_mutex_lock(timer->mutex_clock) != 0)
 		return (-1);
-	if (gettimeofday(&t, NULL) != 0)
+	t.tv_sec = timer->clock->tv_sec;
+	t.tv_usec = timer->clock->tv_usec;
+	if (pthread_mutex_unlock(timer->mutex_clock) != 0)
 		return (-1);
 	time_mls = t.tv_sec * 1000 + t.tv_usec / 1000 + time_mls;
 	while (t.tv_sec * 1000 + t.tv_usec / 1000 < time_mls)
 	{
-		if (gettimeofday(&t, NULL) != 0)
-			return (-1);
 		usleep(10);
+		if (pthread_mutex_lock(timer->mutex_clock) != 0)
+			return (-1);
+		t.tv_sec = timer->clock->tv_sec;
+		t.tv_usec = timer->clock->tv_usec;
+		if (pthread_mutex_unlock(timer->mutex_clock) != 0)
+			return (-1);
 	}
-	if (pthread_mutex_unlock(timer->mutex_clock) != 0)
-		return (-1);
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/18 00:24:01 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/25 19:00:01 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/26 00:25:18 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,8 @@ int	philo_eat(t_philosopher *philo, pthread_mutex_t *left,
 		return (-1);
 	philo->timer->last_eaten.tv_sec = philo->timer->clock->tv_sec;
 	philo->timer->last_eaten.tv_usec = philo->timer->clock->tv_usec;
+	if (pthread_mutex_unlock(philo->timer->mutex_clock) != 0)
+		return (-1);
 	if (pthread_mutex_lock(philo->timer->mutex_time_eaten) != 0)
 		return (-1);
 	philo->timer->time_eaten++;
@@ -51,8 +53,6 @@ int	philo_eat(t_philosopher *philo, pthread_mutex_t *left,
 	if (philo_is_finished(philo))
 		return (0);
 	if (print_status(philo, "is eating", 0) != 1)
-		return (-1);
-	if (pthread_mutex_unlock(philo->timer->mutex_clock) != 0)
 		return (-1);
 	return (ft_mlsleep(philo->menu->tte, philo->timer));
 }

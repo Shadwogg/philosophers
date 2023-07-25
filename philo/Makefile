@@ -6,13 +6,13 @@
 #    By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/07/05 15:57:04 by ggiboury          #+#    #+#              #
-#    Updated: 2023/07/25 16:44:15 by ggiboury         ###   ########.fr        #
+#    Updated: 2023/07/26 00:00:50 by ggiboury         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 SHELL = /bin/sh
 
-FLAGS = -Wall -Werror -Wextra
+FLAGS = -Wall -Werror -Wextra -g3
 
 NAME = philo
 
@@ -24,6 +24,7 @@ SRCS = init_philosophers.c	\
 		ft_free.c			\
 		ft_parse.c			\
 		ft_print.c			\
+		threads.c			\
 		philo_life.c
 
 S_MAIN = philosophers.c

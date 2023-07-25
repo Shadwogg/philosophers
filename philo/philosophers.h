@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 15:57:13 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/25 18:55:33 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/26 00:21:17 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,6 @@
 # include <pthread.h>
 # include <limits.h>
 # include <sys/time.h>
-# include <errno.h>
 
 // The struct containing parsed informations.
 typedef struct s_info
@@ -30,7 +29,6 @@ typedef struct s_info
 	unsigned int	tte;
 	unsigned int	tts;
 	unsigned int	times;
-	struct timeval	start_time;
 }	t_info;
 
 // Chained list of thread.
@@ -38,19 +36,19 @@ typedef struct s_thread
 {
 	unsigned int			numero;
 	struct s_thread			*next;
-	pthread_t				thread;
 	struct s_philosopher	*philo;
+	pthread_t				thread;
 }	t_thread;
 
 // Struct containing counters.
 typedef struct s_timer
 {
 	unsigned int	time_eaten;
-	pthread_mutex_t	*mutex_time_eaten;
 	struct timeval	start;
 	struct timeval	last_eaten;
-	pthread_mutex_t	*mutex_clock;
 	struct timeval	*clock;
+	pthread_mutex_t	*mutex_time_eaten;
+	pthread_mutex_t	*mutex_clock;
 }	t_timer;
 
 // View of a philosopher.
@@ -61,19 +59,18 @@ typedef struct s_philosopher
 	pthread_mutex_t	*left_fork;
 	pthread_mutex_t	*right_fork;
 	pthread_mutex_t	*turn;
+	pthread_mutex_t	*mutex_is_finished;
 	t_info			*menu;
 	t_timer			*timer;
-	pthread_mutex_t	*mutex_is_finished;
 }	t_philosopher;
 
 typedef struct s_controller
 {
-	struct s_philosopher	**philos;
 	unsigned int			number_philo;
+	struct s_philosopher	**philos;
 }	t_controller;
 
 int				print_error(char *str);
-void			print_info(t_info *p);
 int				print_status(t_philosopher *philo, char *str, int death);
 
 /*************************************PARSE************************************/
@@ -84,10 +81,10 @@ t_info			*ft_parse(int argc, char **argv);
 pthread_mutex_t	**init_forks(unsigned int nb);
 t_thread		*init_threads(t_info *philo, pthread_mutex_t **forks);
 t_philosopher	*init_philo_mutex(t_philosopher *philo, unsigned int nb_philo,
-					pthread_mutex_t **forks, pthread_mutex_t *turn);
-t_philosopher	*set_philosopher(t_info *ref, pthread_mutex_t **forks,
-					unsigned int ct, pthread_mutex_t *turn);
-int				init_timer(t_philosopher *philo, struct timeval start_time);
+					pthread_mutex_t **forks);
+t_philosopher	*init_philosopher(t_info *ref, pthread_mutex_t **forks,
+					unsigned int ct);
+int				init_timer(t_philosopher *philo);
 t_info			*copy_menu(t_info *ref);
 
 /*************************************UTILS************************************/
@@ -121,9 +118,18 @@ int				simulation_is_finished(t_controller *ctler);
 int				all_philo_has_eaten(t_philosopher **philos, unsigned int nb);
 void			*harvest(void *souls);
 
-/**********************************TIME_OF_PHILO*******************************/
+/*********************************TIME_OF_PHILO********************************/
 
 int				update_clock(t_timer *clock);
 void			*set_timers(void *souls);
+int				init_clock_thread(pthread_t *clock_thread,
+					t_info *info, t_thread *threads);
+
+/************************************THREADS***********************************/
+
+int				verify_threads(t_thread *threads);
+t_thread		*init_threads(t_info *info, pthread_mutex_t **forks);
+int				launch_threads(t_info *info, t_thread *threads);
+int				synchronize_philosophers(t_thread *threads);
 
 #endif

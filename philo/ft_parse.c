@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/10 12:59:43 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/24 18:58:50 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/26 00:32:40 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ pthread_mutex_t	**init_forks(unsigned int nb)
 
 	forks = malloc(sizeof(pthread_mutex_t *) * nb);
 	if (forks == NULL)
-		return (NULL);
+		return (print_error("Forks failed to be allocated."), NULL);
 	ct = 0;
 	while (ct < nb)
 	{
@@ -27,56 +27,16 @@ pthread_mutex_t	**init_forks(unsigned int nb)
 		if (forks[ct] == NULL)
 		{
 			free_forks(forks, ct);
-			return (NULL);
+			return (print_error("One fork failed to be allocated."), NULL);
 		}
 		if (pthread_mutex_init(forks[ct], NULL) != 0)
 		{
 			free_forks(forks, ct);
-			return (NULL);
+			return (print_error("One fork failed to be initialised."), NULL);
 		}
 		ct++;
 	}
 	return (forks);
-}
-
-t_thread	*init_threads(t_info *info, pthread_mutex_t **forks)
-{
-	unsigned int	ct;
-	t_thread		*threads;
-	t_thread		*cur;
-	pthread_mutex_t	*turn;
-
-	threads = malloc(sizeof(t_thread));
-	if (threads == NULL)
-	{
-		free(info);
-		print_error("t_thread failed to be malloc.");
-	}
-	threads->next = NULL;
-	threads->numero = 1;
-	threads->philo = NULL;
-	ct = 1;
-	while (ct++ < info->nb_philos)
-		add_list(&threads, info);
-	turn = malloc(sizeof(pthread_mutex_t));
-	if (turn == NULL)
-		print_error("A implementer");
-	if (pthread_mutex_init(turn, NULL) != 0)
-		print_error("TO IMPLENT (philo)");
-	cur = threads;
-	ct = 0;
-	while (cur != NULL)
-	{
-		cur->philo = set_philosopher(info, forks, ct++, turn);
-		if (cur->philo == NULL)
-		{
-			free_print("Philo failed to be initialized.", info, threads, forks);
-			return (NULL);
-			// return (1);
-		}
-		cur = cur->next;
-	}
-	return (threads);
 }
 
 int	input_is_invalid(int argc, char **argv)
@@ -87,12 +47,10 @@ int	input_is_invalid(int argc, char **argv)
 	while (++ct < argc)
 	{
 		if (is_not_number(argv[ct]))
-			print_error("Only positive numbers are allowed");
+			return (print_error("Only positive numbers are allowed.\n"));
 		if (is_not_int(argv[ct]))
-			print_error("Only strict positive int are allowed");
+			return (print_error("Only strict positive int are allowed.\n"));
 	}
-	if (argc == 5 && ft_atoi(argv[4]) == 0)
-		exit(EXIT_SUCCESS);
 	return (0);
 }
 
@@ -102,13 +60,14 @@ t_info	*ft_parse(int argc, char **argv)
 	int		arr[5];
 	t_info	*philo;
 
-	input_is_invalid(argc, argv);
+	if (input_is_invalid(argc, argv) != 0)
+		return (NULL);
 	ct = -1;
 	while (++ct < argc)
 		arr[ct] = ft_atoi(argv[ct]);
 	philo = malloc(sizeof(t_info));
 	if (philo == NULL)
-		print_error("Malloc error in ft_parse()\n");
+		return (print_error("Malloc error in ft_parse()\n"), NULL);
 	philo->times = 0;
 	philo->nb_philos = arr[0];
 	philo->ttd = arr[1];

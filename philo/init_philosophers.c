@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/17 23:35:15 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/25 19:02:44 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/26 00:21:04 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ t_info	*copy_menu(t_info *info)
 	return (menu);
 }
 
-int	init_timer(t_philosopher *philo, struct timeval start_time)
+int	init_timer(t_philosopher *philo)
 {
 	philo->timer = malloc(sizeof(t_timer));
 	if (philo->timer == NULL)
@@ -36,8 +36,6 @@ int	init_timer(t_philosopher *philo, struct timeval start_time)
 		free(philo);
 		return (1);
 	}
-	philo->timer->start = start_time;
-	philo->timer->last_eaten = start_time;
 	philo->timer->time_eaten = 0;
 	philo->timer->mutex_time_eaten = malloc(sizeof(pthread_mutex_t));
 	if (philo->timer->mutex_time_eaten == NULL)
@@ -53,14 +51,13 @@ int	init_timer(t_philosopher *philo, struct timeval start_time)
 }
 
 t_philosopher	*init_philo_mutex(t_philosopher *philo, unsigned int nb_philos,
-	pthread_mutex_t **forks, pthread_mutex_t *turn)
+	pthread_mutex_t **forks)
 {
 	if (philo->id - 1 == 0)
 		philo->left_fork = forks[nb_philos - 1];
 	else
 		philo->left_fork = forks[philo->id - 2];
 	philo->right_fork = forks[philo->id - 1];
-	philo->turn = turn;
 	philo->mutex_is_finished = malloc(sizeof(pthread_mutex_t));
 	if (philo->mutex_is_finished == NULL)
 		return (NULL);
@@ -72,28 +69,22 @@ t_philosopher	*init_philo_mutex(t_philosopher *philo, unsigned int nb_philos,
 	return (philo);
 }
 
-t_philosopher	*set_philosopher(t_info *info, pthread_mutex_t **forks,
-	unsigned int ct, pthread_mutex_t *turn)
+t_philosopher	*init_philosopher(t_info *info, pthread_mutex_t **forks,
+	unsigned int ct)
 {
 	t_philosopher	*philo;
 
 	philo = malloc(sizeof(t_philosopher));
 	if (philo == NULL)
-		return (NULL);
+		return (print_error("A philosopher failed to be allocated\n"), NULL);
 	philo->id = ct + 1;
 	philo->menu = copy_menu(info);
 	if (philo->menu == NULL)
-	{
-		free(philo);
-		return (NULL);
-	}
-	if (init_philo_mutex(philo, info->nb_philos, forks, turn) == NULL)
-	{
-		free_philo(philo);
-		return (NULL);
-	}
-	if (init_timer(philo, info->start_time) != 0)
-		return (NULL);
+		return (free(philo->menu), free(philo), NULL);
+	if (init_philo_mutex(philo, info->nb_philos, forks) == NULL)
+		return (free(philo->menu), free(philo), NULL);
+	if (init_timer(philo) != 0)
+		return (free_philo(philo), NULL);
 	philo->is_finished = malloc(sizeof(int));
 	if (philo->is_finished != NULL)
 		*(philo->is_finished) = 0;

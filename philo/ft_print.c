@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/10 13:15:58 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/25 18:58:41 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/25 22:32:04 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,18 +17,12 @@ int	print_error(char *str)
 	size_t	len;
 
 	if (str == NULL)
-		exit(EXIT_FAILURE);
+		return (1);
 	len = 0;
 	while (str[len] != 0)
 		len++;
 	write(2, str, len);
-	exit(EXIT_FAILURE);
-}
-
-void	print_info(t_info *p)
-{
-	printf("Philo\nttd = %u\n", p->ttd);
-	printf("tte = %u\ntts = %u\ntimes = %u\n", p->tte, p->tts, p->times);
+	return (1);
 }
 
 // default color = "\033[00m"

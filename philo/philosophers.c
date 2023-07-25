@@ -6,53 +6,11 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 15:57:10 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/25 16:43:48 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/26 00:23:03 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
-
-// Verify that each thread ended correctly, if not return 0.
-int	verify_threads(t_thread *threads)
-{
-	t_thread		*cur;
-	void			*returned_philo;
-	char			err;
-
-	cur = threads;
-	err = 1;
-	returned_philo = NULL;
-	while (cur != NULL)
-	{
-		if (pthread_join(cur->thread, &returned_philo) != 0)
-			printf("TO IMPLEMENT");
-		if (returned_philo == NULL)
-			err = 0;
-		else
-			free_philo(returned_philo);
-		cur = cur->next;
-	}
-	return ((int) err);
-}
-
-int	launch_threads(t_info *info, t_thread *threads, pthread_mutex_t **forks)
-{
-	unsigned int	ct;
-	t_thread		*cur;
-
-	ct = 0;
-	cur = threads;
-	while (cur != NULL)
-	{
-		if (pthread_create(&cur->thread, NULL, &live, cur->philo) == -1)
-		{
-			free_print("Thread failed to be initialized.", info, threads, forks);
-			return (1);
-		}
-		cur = cur->next;
-	}
-	return (0);
-}
 
 int	init_death(pthread_t *ending_thread, t_info *info, t_thread *threads)
 {
@@ -82,24 +40,46 @@ int	init_death(pthread_t *ending_thread, t_info *info, t_thread *threads)
 	return (0);
 }
 
+int	set_time(t_thread *threads)
+{
+	struct timeval	*start;
+
+	if (gettimeofday(threads->philo->timer->clock, NULL) != 0)
+		return (-1);
+	start = threads->philo->timer->clock;
+	while (threads != NULL)
+	{
+		threads->philo->timer->start.tv_sec = start->tv_sec;
+		threads->philo->timer->start.tv_usec = start->tv_usec;
+		threads->philo->timer->last_eaten.tv_sec = start->tv_sec;
+		threads->philo->timer->last_eaten.tv_usec = start->tv_usec;
+		threads = threads->next;
+	}
+	return (0);
+}
+
 //Initialize each thread used for each philosopher.
-void	philosopher(t_info *p, t_thread *threads, pthread_mutex_t **forks)
+int	philosopher(t_info *p, t_thread *threads)
 {
 	pthread_t		end_thread;
 	pthread_t		watch_thread;
 
+	if (set_time(threads) != 0)
+		return (-1);
 	if (init_death(&end_thread, p, threads) != 0)
 		print_error("TO IMPPLLEEMMEENNT (philosopher)");
-	if (init_watch(&watch_thread, p, threads) != 0)
+	if (init_clock_thread(&watch_thread, p, threads) != 0)
 		print_error("TO implement");
-	if (launch_threads(p, threads, forks) != 0)
-		return ;
+	if (launch_threads(p, threads) != 0)
+		return (1);
 	if (verify_threads(threads) == 0)
 	{
-		free_print("One thread failed.", p, threads, forks);
+		// free_print("One thread failed.", p, threads);
+		return (-1);
 	}
 	// if (pthread_mutex_destroy(&turn) != 0)
 	// 	free_print("Failed to destroy the turn mutex", p, threads, forks);
+	return (0);
 }
 
 int	main(int argc, char **argv)
@@ -107,25 +87,37 @@ int	main(int argc, char **argv)
 	t_info			*philo;
 	t_thread		*threads;
 	pthread_mutex_t	**forks;
-	struct timeval	tv;
 
 	if (argc < 5 || argc > 6)
-		print_error("Usage : ./philo <nb> <ttd> <tte> <tts> [nb_e].");
+		return (print_error("Usage : ./philo <nb> <ttd> <tte> <tts> [nb_e]."));
 	philo = ft_parse(argc - 1, argv + 1);
-	printf("SF normal, didnt implement yet le malloc de l'horloge commune\n");
+	if (philo == NULL)
+		return (1);
 	forks = init_forks(philo->nb_philos);
 	if (forks == NULL)
+		return (free(philo), 1);
+	// All good
+	threads = init_threads(philo, forks);
+	if (threads == NULL)
 	{
 		free(philo);
-		print_error("Forks failed to be initialized.");
+		free_forks(forks, philo->nb_philos);
+		print_error("Threads failed to be initialised.");
+		return (1);
 	}
-	// All good
-	if (gettimeofday(&tv, NULL) != 0)
-		free_print("Error while getting the time", philo, NULL, forks);
-	philo->start_time = tv;
-	threads = init_threads(philo, forks);
-	philosopher(philo, threads, forks);
+	if (synchronize_philosophers(threads) != 0)
+	{
+		return (1);
+	}
+	if (philosopher(philo, threads) != 0)
+		return (1);
 	free_forks(forks, philo->nb_philos);
 	free_threads(threads);
 	free(philo);
 }
+
+/*Truc a check :
+
+(t_info *)(!print_error("Malloc error in ft_parse()\n"))
+
+*/

@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 16:43:24 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/25 19:00:54 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/26 00:35:28 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ void	*set_timers(void *souls)
 	ctler = souls;
 	while (!simulation_is_finished(ctler))
 	{
-		ft_mlsleep(1, ctler->philos[0]->timer);
+		usleep(1);
 		if (update_clock(ctler->philos[0]->timer) != 0)
 			return (free_controller(ctler));
 	}
@@ -41,30 +41,30 @@ void	*set_timers(void *souls)
 }
 
 //VAR to rename
-int	init_clock_thread(pthread_t *watch_thread, t_info *info, t_thread *threads)
+int	init_clock_thread(pthread_t *clock_thread, t_info *info, t_thread *threads)
 {
-	t_controller	*watch;
+	t_controller	*clock;
 	t_thread		*cur;
 	unsigned int	ct;
 
-	watch = malloc(sizeof(t_controller));
-	if (watch == NULL)
+	clock = malloc(sizeof(t_controller));
+	if (clock == NULL)
 		print_error("Controller null");
-	watch->number_philo = info->nb_philos;
-	watch->philos = malloc(sizeof(t_philosopher *) * info->nb_philos);
+	clock->number_philo = info->nb_philos;
+	clock->philos = malloc(sizeof(t_philosopher *) * info->nb_philos);
 	cur = threads;
 	ct = 0;
 	while (cur != NULL)
 	{
-		watch->philos[ct] = cur->philo;
+		clock->philos[ct] = cur->philo;
 		ct++;
 		cur = cur->next;
 	}
-	if (watch->philos == NULL)
+	if (clock->philos == NULL)
 		return (1);
-	if (pthread_create(watch_thread, NULL, &set_timers, watch) != 0)
+	if (pthread_create(clock_thread, NULL, &set_timers, clock) != 0)
 		return (1);
-	if (pthread_detach(*watch_thread) != 0)
+	if (pthread_detach(*clock_thread) != 0)
 		return (1);
 	return (0);
 }
