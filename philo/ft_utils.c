@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/06 14:39:59 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/26 00:33:00 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/26 00:57:45 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,22 +72,22 @@ void	add_list(t_thread **t, t_info *ref)
 
 int	ft_mlsleep(long time_mls, t_timer *timer)
 {
-	struct timeval	t;
+	struct timeval	actual;
 
 	if (pthread_mutex_lock(timer->mutex_clock) != 0)
 		return (-1);
-	t.tv_sec = timer->clock->tv_sec;
-	t.tv_usec = timer->clock->tv_usec;
+	actual.tv_sec = timer->clock->tv_sec;
+	actual.tv_usec = timer->clock->tv_usec;
 	if (pthread_mutex_unlock(timer->mutex_clock) != 0)
 		return (-1);
-	time_mls = t.tv_sec * 1000 + t.tv_usec / 1000 + time_mls;
-	while (t.tv_sec * 1000 + t.tv_usec / 1000 < time_mls)
+	time_mls = (actual.tv_sec * 1000 + actual.tv_usec / 1000) + time_mls;
+	while (actual.tv_sec * 1000 + actual.tv_usec / 1000 < time_mls)
 	{
 		usleep(10);
 		if (pthread_mutex_lock(timer->mutex_clock) != 0)
 			return (-1);
-		t.tv_sec = timer->clock->tv_sec;
-		t.tv_usec = timer->clock->tv_usec;
+		actual.tv_sec = timer->clock->tv_sec;
+		actual.tv_usec = timer->clock->tv_usec;
 		if (pthread_mutex_unlock(timer->mutex_clock) != 0)
 			return (-1);
 	}

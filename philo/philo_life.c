@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/18 00:24:01 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/26 00:25:18 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/26 01:00:47 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ int	lock_forks(t_philosopher *philo, pthread_mutex_t *left,
 {
 	if (pthread_mutex_lock(left) != 0)
 		return (-1);
-	if (print_status(philo, "has taken a fork", 0) != 1)
+	if (print_status(philo, "has taken a fork", 0) != 0)
 		return (-1);
 	if (left == right)
 	{
@@ -37,7 +37,7 @@ int	philo_eat(t_philosopher *philo, pthread_mutex_t *left,
 	pthread_mutex_t *right)
 {
 	lock_forks(philo, left, right);
-	if (philo_is_finished(philo))
+	if (philo_is_finished(philo) == 1)
 		return (0);
 	if (pthread_mutex_lock(philo->timer->mutex_clock) != 0)
 		return (-1);
@@ -52,7 +52,7 @@ int	philo_eat(t_philosopher *philo, pthread_mutex_t *left,
 		return (-1);
 	if (philo_is_finished(philo))
 		return (0);
-	if (print_status(philo, "is eating", 0) != 1)
+	if (print_status(philo, "is eating", 0) != 0)
 		return (-1);
 	return (ft_mlsleep(philo->menu->tte, philo->timer));
 }
@@ -106,7 +106,7 @@ void	*live(void *philo)
 			ft_mlsleep(t->menu->tte / 2, t->timer);
 		if (philo_is_finished(t))
 			return (t);
-		if (lock_forks(t, t->left_fork, t->right_fork) != 0)
+		if (philo_eat(t, t->left_fork, t->right_fork) != 0)
 			return (NULL);
 		if (unlock_forks(t->left_fork, t->right_fork) != 0)
 			return (NULL);
