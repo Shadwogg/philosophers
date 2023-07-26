@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 15:57:10 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/26 00:23:03 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/26 15:34:32 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,16 +63,17 @@ int	philosopher(t_info *p, t_thread *threads)
 {
 	pthread_t		end_thread;
 	pthread_t		watch_thread;
+	t_controller	*clock;
 
 	if (set_time(threads) != 0)
 		return (-1);
 	if (init_death(&end_thread, p, threads) != 0)
 		print_error("TO IMPPLLEEMMEENNT (philosopher)");
-	if (init_clock_thread(&watch_thread, p, threads) != 0)
+	if (init_clock_thread(&watch_thread, &clock, p, threads) != 0)
 		print_error("TO implement");
 	if (launch_threads(p, threads) != 0)
 		return (1);
-	if (verify_threads(threads) == 0)
+	if (verify_threads(threads, clock) == 0)
 	{
 		// free_print("One thread failed.", p, threads);
 		return (-1);
@@ -111,13 +112,7 @@ int	main(int argc, char **argv)
 	}
 	if (philosopher(philo, threads) != 0)
 		return (1);
-	free_forks(forks, philo->nb_philos);
-	free_threads(threads);
+	// free_forks(forks, philo->nb_philos);
+	// free_threads(threads);
 	free(philo);
 }
-
-/*Truc a check :
-
-(t_info *)(!print_error("Malloc error in ft_parse()\n"))
-
-*/

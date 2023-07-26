@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 22:08:47 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/26 00:11:58 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/26 15:39:58 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ int	synchronize_philosophers(t_thread *threads)
 }
 
 // Verify that each thread ended correctly, if not return 0.
-int	verify_threads(t_thread *threads)
+int	verify_threads(t_thread *threads, t_controller *clock)
 {
 	t_thread		*cur;
 	void			*returned_philo;
@@ -87,6 +87,11 @@ int	verify_threads(t_thread *threads)
 			err = 0;
 		else
 			free_philo(returned_philo);
+		if (pthread_mutex_lock(clock->mutex_philo_dead) != 0)
+			return (-1);
+		clock->philo_dead++;
+		if (pthread_mutex_unlock(clock->mutex_philo_dead) != 0)
+			return (-1);
 		cur = cur->next;
 	}
 	return (err);

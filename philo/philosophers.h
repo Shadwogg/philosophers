@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 15:57:13 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/26 00:21:17 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/26 15:54:04 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,8 @@ typedef struct s_philosopher
 
 typedef struct s_controller
 {
+	pthread_mutex_t			*mutex_philo_dead;
+	unsigned int			philo_dead;
 	unsigned int			number_philo;
 	struct s_philosopher	**philos;
 }	t_controller;
@@ -122,12 +124,12 @@ void			*harvest(void *souls);
 
 int				update_clock(t_timer *clock);
 void			*set_timers(void *souls);
-int				init_clock_thread(pthread_t *clock_thread,
+int				init_clock_thread(pthread_t *clock_thread, t_controller **ref,
 					t_info *info, t_thread *threads);
 
 /************************************THREADS***********************************/
 
-int				verify_threads(t_thread *threads);
+int				verify_threads(t_thread *threads, t_controller *clock);
 t_thread		*init_threads(t_info *info, pthread_mutex_t **forks);
 int				launch_threads(t_info *info, t_thread *threads);
 int				synchronize_philosophers(t_thread *threads);

@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/06 14:39:59 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/26 00:57:45 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/26 15:36:24 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,7 @@ int	ft_mlsleep(long time_mls, t_timer *timer)
 	time_mls = (actual.tv_sec * 1000 + actual.tv_usec / 1000) + time_mls;
 	while (actual.tv_sec * 1000 + actual.tv_usec / 1000 < time_mls)
 	{
-		usleep(10);
+		usleep(100);
 		if (pthread_mutex_lock(timer->mutex_clock) != 0)
 			return (-1);
 		actual.tv_sec = timer->clock->tv_sec;
