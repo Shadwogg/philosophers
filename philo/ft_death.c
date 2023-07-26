@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 15:59:42 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/26 15:15:53 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/26 18:55:49 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,17 +37,17 @@ int	simulation_is_finished(t_controller *ctler)
 	while ((unsigned int)++ct < ctler->number_philo)
 	{
 		cur = ctler->philos[ct];
-		start = cur->timer->last_eaten.tv_sec * 1000
-			+ cur->timer->last_eaten.tv_usec / 1000;
-		if (pthread_mutex_lock(cur->timer->mutex_clock) != 0)
+		start = cur->timer.last_eaten.tv_sec * 1000
+			+ cur->timer.last_eaten.tv_usec / 1000;
+		if (pthread_mutex_lock(cur->timer.mutex_clock) != 0)
 			return (-1);
-		tv.tv_sec = cur->timer->clock->tv_sec;
-		tv.tv_usec = cur->timer->clock->tv_usec;
-		if (pthread_mutex_unlock(cur->timer->mutex_clock) != 0)
+		tv.tv_sec = cur->timer.clock->tv_sec;
+		tv.tv_usec = cur->timer.clock->tv_usec;
+		if (pthread_mutex_unlock(cur->timer.mutex_clock) != 0)
 			return (-1);
 		actual = (tv.tv_sec * 1000 + tv.tv_usec / 1000)
-			- cur->timer->time_eaten * (cur->menu->tte);
-		if (actual - start >= cur->menu->ttd)
+			- cur->timer.time_eaten * (cur->menu.tte);
+		if (actual - start >= cur->menu.ttd)
 			return (ct + 1);
 	}
 	return (0);
@@ -56,22 +56,22 @@ int	simulation_is_finished(t_controller *ctler)
 int	all_philo_has_eaten(t_philosopher **philos, unsigned int nb)
 {
 	unsigned int	ct;
-	t_timer			*cur;
+	t_timer			cur;
 
 	ct = 0;
 	while (ct < nb)
 	{
 		cur = philos[ct]->timer;
-		if (pthread_mutex_lock(cur->mutex_time_eaten) != 0)
+		if (pthread_mutex_lock(cur.mutex_time_eaten) != 0)
 			return (-1);
-		if (philos[ct]->menu->times == 0
-			|| cur->time_eaten < philos[ct]->menu->times)
+		if (philos[ct]->menu.times == 0
+			|| cur.time_eaten < philos[ct]->menu.times)
 		{
-			if (pthread_mutex_unlock(cur->mutex_time_eaten) != 0)
+			if (pthread_mutex_unlock(cur.mutex_time_eaten) != 0)
 				return (-1);
 			return (0);
 		}
-		if (pthread_mutex_unlock(cur->mutex_time_eaten) != 0)
+		if (pthread_mutex_unlock(cur.mutex_time_eaten) != 0)
 			return (-1);
 		ct++;
 	}

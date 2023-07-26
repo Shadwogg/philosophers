@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/10 13:15:58 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/26 15:19:41 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/26 18:50:10 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,13 +54,13 @@ int	print_status(t_philosopher *philo, char *str, int has_died)
 	suseconds_t	usec;
 	suseconds_t	start_usec;
 
-	if (pthread_mutex_lock(philo->timer->mutex_clock) != 0)
+	if (pthread_mutex_lock(philo->timer.mutex_clock) != 0)
 		return (-1);
-	sec = philo->timer->clock->tv_sec;
-	usec = philo->timer->clock->tv_usec;
-	start_sec = philo->timer->start.tv_sec;
-	start_usec = philo->timer->start.tv_usec;
-	if (pthread_mutex_unlock(philo->timer->mutex_clock) != 0)
+	sec = philo->timer.clock->tv_sec;
+	usec = philo->timer.clock->tv_usec;
+	start_sec = philo->timer.start.tv_sec;
+	start_usec = philo->timer.start.tv_usec;
+	if (pthread_mutex_unlock(philo->timer.mutex_clock) != 0)
 		return (-1);
 	if (pthread_mutex_lock(philo->turn) != 0)
 		return (-1);

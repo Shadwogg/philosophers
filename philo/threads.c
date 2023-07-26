@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 22:08:47 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/26 15:39:58 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/26 19:03:28 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,21 +20,22 @@ t_thread	*init_threads(t_info *info, pthread_mutex_t **forks)
 
 	threads = malloc(sizeof(t_thread));
 	if (threads == NULL)
-		return (NULL);
+		return (print_error("Threads failed to be allocated.\n"), NULL);
 	threads->next = NULL;
 	threads->numero = 1;
 	threads->philo = NULL;
 	ct = 1;
 	while (ct++ < info->nb_philos)
-		add_list(&threads, info);
+		add_list(&threads);
+	if (threads == NULL)
+		return (print_error("Threads failed to be allocated.\n"), NULL);
 	cur = threads;
 	ct = 0;
 	while (cur != NULL)
 	{
 		cur->philo = init_philosopher(info, forks, ct++);
 		if (cur->philo == NULL)
-			return (free_print("Philo failed to be initialized.",
-					info, threads, forks), NULL);
+			return (free_threads(threads), NULL);
 		cur = cur->next;
 	}
 	return (threads);
@@ -61,8 +62,8 @@ int	synchronize_philosophers(t_thread *threads)
 		return (-1);
 	while (threads != NULL)
 	{
-		threads->philo->timer->mutex_clock = mutex_clock;
-		threads->philo->timer->clock = clock;
+		threads->philo->timer.mutex_clock = mutex_clock;
+		threads->philo->timer.clock = clock;
 		threads->philo->turn = mutex_turn;
 		threads = threads->next;
 	}

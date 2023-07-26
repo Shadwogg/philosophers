@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 15:57:13 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/26 15:54:04 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/26 19:01:32 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,8 +60,8 @@ typedef struct s_philosopher
 	pthread_mutex_t	*right_fork;
 	pthread_mutex_t	*turn;
 	pthread_mutex_t	*mutex_is_finished;
-	t_info			*menu;
-	t_timer			*timer;
+	t_info			menu;
+	t_timer			timer;
 }	t_philosopher;
 
 typedef struct s_controller
@@ -77,17 +77,17 @@ int				print_status(t_philosopher *philo, char *str, int death);
 
 /*************************************PARSE************************************/
 
-void			add_list(t_thread **t, t_info *ref);
+void			add_list(t_thread **t);
 int				input_is_invalid(int argc, char **argv);
 t_info			*ft_parse(int argc, char **argv);
 pthread_mutex_t	**init_forks(unsigned int nb);
 t_thread		*init_threads(t_info *philo, pthread_mutex_t **forks);
-t_philosopher	*init_philo_mutex(t_philosopher *philo, unsigned int nb_philo,
+int				init_philo_mutex(t_philosopher *philo, unsigned int nb_philo,
 					pthread_mutex_t **forks);
 t_philosopher	*init_philosopher(t_info *ref, pthread_mutex_t **forks,
 					unsigned int ct);
 int				init_timer(t_philosopher *philo);
-t_info			*copy_menu(t_info *ref);
+void			copy_menu(t_info *dst, t_info *src);
 
 /*************************************UTILS************************************/
 
@@ -96,7 +96,7 @@ int				is_not_int(char *nb);
 int				ft_atoi(const char *nptr);
 char			*ft_itoa(unsigned int n);
 
-int				ft_mlsleep(long time_mls, t_timer *t);
+int				ft_mlsleep(long time_mls, t_timer t);
 
 void			*free_controller(t_controller *ctler);
 void			free_threads(t_thread *t);

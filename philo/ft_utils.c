@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/06 14:39:59 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/26 15:36:24 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/26 19:01:02 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,11 +46,13 @@ int	is_not_int(char *nb)
 	return (0);
 }
 
-void	add_list(t_thread **t, t_info *ref)
+void	add_list(t_thread **t)
 {
 	t_thread		*cur;
 	unsigned int	ct;
 
+	if (*t == NULL)
+		return ;
 	cur = *t;
 	ct = 1;
 	while (cur->next != NULL)
@@ -61,34 +63,34 @@ void	add_list(t_thread **t, t_info *ref)
 	cur->next = malloc(sizeof(t_thread));
 	if (cur->next == NULL)
 	{
-		free(ref);
 		free_threads(*t);
 		print_error("t_thread failed to be malloc.");
+		return ;
 	}
 	cur->next->numero = ct;
 	cur->next->next = NULL;
 	cur->next->philo = NULL;
 }
 
-int	ft_mlsleep(long time_mls, t_timer *timer)
+int	ft_mlsleep(long time_mls, t_timer timer)
 {
 	struct timeval	actual;
 
-	if (pthread_mutex_lock(timer->mutex_clock) != 0)
+	if (pthread_mutex_lock(timer.mutex_clock) != 0)
 		return (-1);
-	actual.tv_sec = timer->clock->tv_sec;
-	actual.tv_usec = timer->clock->tv_usec;
-	if (pthread_mutex_unlock(timer->mutex_clock) != 0)
+	actual.tv_sec = timer.clock->tv_sec;
+	actual.tv_usec = timer.clock->tv_usec;
+	if (pthread_mutex_unlock(timer.mutex_clock) != 0)
 		return (-1);
 	time_mls = (actual.tv_sec * 1000 + actual.tv_usec / 1000) + time_mls;
 	while (actual.tv_sec * 1000 + actual.tv_usec / 1000 < time_mls)
 	{
 		usleep(100);
-		if (pthread_mutex_lock(timer->mutex_clock) != 0)
+		if (pthread_mutex_lock(timer.mutex_clock) != 0)
 			return (-1);
-		actual.tv_sec = timer->clock->tv_sec;
-		actual.tv_usec = timer->clock->tv_usec;
-		if (pthread_mutex_unlock(timer->mutex_clock) != 0)
+		actual.tv_sec = timer.clock->tv_sec;
+		actual.tv_usec = timer.clock->tv_usec;
+		if (pthread_mutex_unlock(timer.mutex_clock) != 0)
 			return (-1);
 	}
 	return (0);

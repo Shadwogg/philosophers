@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 16:43:24 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/26 16:00:11 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/26 18:57:58 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ void	*set_timers(void *souls)
 	while (clock_is_on(ctler))
 	{
 		usleep(1);
-		if (update_clock(ctler->philos[0]->timer) != 0)
+		if (update_clock(&(ctler->philos[0]->timer)) != 0)
 			return (free_controller(ctler));
 	}
 	free_controller(ctler);

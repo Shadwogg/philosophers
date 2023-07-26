@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 15:57:10 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/26 15:34:32 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/26 18:59:45 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,15 +44,15 @@ int	set_time(t_thread *threads)
 {
 	struct timeval	*start;
 
-	if (gettimeofday(threads->philo->timer->clock, NULL) != 0)
+	if (gettimeofday(threads->philo->timer.clock, NULL) != 0)
 		return (-1);
-	start = threads->philo->timer->clock;
+	start = threads->philo->timer.clock;
 	while (threads != NULL)
 	{
-		threads->philo->timer->start.tv_sec = start->tv_sec;
-		threads->philo->timer->start.tv_usec = start->tv_usec;
-		threads->philo->timer->last_eaten.tv_sec = start->tv_sec;
-		threads->philo->timer->last_eaten.tv_usec = start->tv_usec;
+		threads->philo->timer.start.tv_sec = start->tv_sec;
+		threads->philo->timer.start.tv_usec = start->tv_usec;
+		threads->philo->timer.last_eaten.tv_sec = start->tv_sec;
+		threads->philo->timer.last_eaten.tv_usec = start->tv_usec;
 		threads = threads->next;
 	}
 	return (0);
@@ -98,21 +98,16 @@ int	main(int argc, char **argv)
 	if (forks == NULL)
 		return (free(philo), 1);
 	// All good
-	threads = init_threads(philo, forks);
+	threads = init_threads(philo, forks); // DOING
 	if (threads == NULL)
-	{
-		free(philo);
-		free_forks(forks, philo->nb_philos);
-		print_error("Threads failed to be initialised.");
-		return (1);
-	}
+		return (free(philo), free_forks(forks, philo->nb_philos),
+			print_error("Threads failed to be initialised."));
 	if (synchronize_philosophers(threads) != 0)
 	{
 		return (1);
 	}
 	if (philosopher(philo, threads) != 0)
 		return (1);
-	// free_forks(forks, philo->nb_philos);
-	// free_threads(threads);
 	free(philo);
+	system("leaks philo");
 }
