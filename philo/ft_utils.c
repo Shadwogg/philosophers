@@ -6,7 +6,7 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/06 14:39:59 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/26 19:01:02 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/27 19:42:00 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ void	add_list(t_thread **t)
 	if (cur->next == NULL)
 	{
 		free_threads(*t);
-		print_error("t_thread failed to be malloc.");
+		p_error("t_thread failed to be malloc.");
 		return ;
 	}
 	cur->next->numero = ct;
@@ -77,21 +77,21 @@ int	ft_mlsleep(long time_mls, t_timer timer)
 	struct timeval	actual;
 
 	if (pthread_mutex_lock(timer.mutex_clock) != 0)
-		return (-1);
+		return (p_error("Clock failed to be locked.\n"), -1);
 	actual.tv_sec = timer.clock->tv_sec;
 	actual.tv_usec = timer.clock->tv_usec;
 	if (pthread_mutex_unlock(timer.mutex_clock) != 0)
-		return (-1);
+		return (p_error("Clock failed to be unlocked.\n"), -1);
 	time_mls = (actual.tv_sec * 1000 + actual.tv_usec / 1000) + time_mls;
 	while (actual.tv_sec * 1000 + actual.tv_usec / 1000 < time_mls)
 	{
 		usleep(100);
 		if (pthread_mutex_lock(timer.mutex_clock) != 0)
-			return (-1);
+			return (p_error("Clock failed to be locked.\n"), -1);
 		actual.tv_sec = timer.clock->tv_sec;
 		actual.tv_usec = timer.clock->tv_usec;
 		if (pthread_mutex_unlock(timer.mutex_clock) != 0)
-			return (-1);
+			return (p_error("Clock failed to be unlocked.\n"), -1);
 	}
 	return (0);
 }

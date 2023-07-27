@@ -6,13 +6,13 @@
 /*   By: ggiboury <ggiboury@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/10 13:15:58 by ggiboury          #+#    #+#             */
-/*   Updated: 2023/07/26 18:50:10 by ggiboury         ###   ########.fr       */
+/*   Updated: 2023/07/27 18:15:51 by ggiboury         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
-int	print_error(char *str)
+int	p_error(char *str)
 {
 	size_t	len;
 
@@ -55,20 +55,21 @@ int	print_status(t_philosopher *philo, char *str, int has_died)
 	suseconds_t	start_usec;
 
 	if (pthread_mutex_lock(philo->timer.mutex_clock) != 0)
-		return (-1);
+		return (p_error("m_clock failed to be locked.\n"), -1);
 	sec = philo->timer.clock->tv_sec;
 	usec = philo->timer.clock->tv_usec;
 	start_sec = philo->timer.start.tv_sec;
 	start_usec = philo->timer.start.tv_usec;
 	if (pthread_mutex_unlock(philo->timer.mutex_clock) != 0)
-		return (-1);
+		return (p_error("m_timer failed to be unlocked.\n"), -1);
 	if (pthread_mutex_lock(philo->turn) != 0)
-		return (-1);
+		return (p_error("m_turn failed to be locked.\n"), -1);
 	if (someone_has_died != 1)
-		printf("%ld %u %s\n", (sec * 1000 + usec / 1000)
-			- (start_sec * 1000 + start_usec / 1000), philo->id, str);
-	if (pthread_mutex_unlock(philo->turn) != 0)
-		return (-1);
+		if (printf("%ld %u %s\n", (sec * 1000 + usec / 1000)
+				- (start_sec * 1000 + start_usec / 1000), philo->id, str) <= 0)
+			return (p_error("printf failed.\n"), -1);
 	someone_has_died |= has_died;
+	if (pthread_mutex_unlock(philo->turn) != 0)
+		return (p_error("m_turn failed to be unlocked.\n"), -1);
 	return (0);
 }
