@@ -60,7 +60,7 @@ int	simulation_is_finished(t_controller *ctler)
 		if (pthread_mutex_lock(cur->timer.mutex_clock) != 0)
 			return (p_error("M_clock failed to be locked.\n"), -1);
 		actual = (cur->timer.clock->tv_sec * 1000 + cur->timer.clock->tv_usec
-				/ 1000) - cur->timer.time_eaten * (cur->menu.tte);
+				/ 1000);
 		if (pthread_mutex_unlock(cur->timer.mutex_clock) != 0)
 			return (p_error("M_clock failed to be unlocked.\n"), -1);
 		if (pthread_mutex_unlock(cur->timer.mutex_timer) != 0)

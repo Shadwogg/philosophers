@@ -94,8 +94,11 @@ int	main(int argc, char **argv)
 		return (free(philo), free_forks(forks, philo->nb_philos),
 			p_error("Threads failed to be initialised."));
 	if (synchronize_philosophers(threads) != 0)
-		return (free_threads(threads), free_forks(forks, ft_atoi(argv[1])), 1);
+		return (free_threads(threads), free(philo),
+			free_forks(forks, ft_atoi(argv[1])), 1);
 	if (philosopher(philo, threads) != 0)
-		return (free_threads(threads), free_forks(forks, ft_atoi(argv[1])), 1);
+		return (free_threads(threads), free(philo),
+			free_forks(forks, ft_atoi(argv[1])), 1);
 	free_forks(forks, ft_atoi(argv[1]));
+	free(philo);
 }

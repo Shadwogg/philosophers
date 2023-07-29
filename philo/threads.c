@@ -130,10 +130,8 @@ int	verify_threads(t_thread *threads, t_controller *clock)
 
 int	launch_threads(t_thread *threads)
 {
-	unsigned int	ct;
 	t_thread		*cur;
 
-	ct = 0;
 	cur = threads;
 	while (cur != NULL)
 	{
